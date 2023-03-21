@@ -26,13 +26,11 @@ namespace Hospital.API.Controllers
     [Route("/[controller]")]
     public class AuthController : Controller
     {
-        private readonly IConfiguration configuration;
         private readonly HospitalDbContext dbContext;
         private readonly HashPassword hashPassword;
 
-        public AuthController(IConfiguration configuration, HospitalDbContext hospitalDbContext, HashPassword hashPassword)
+        public AuthController(HospitalDbContext hospitalDbContext, HashPassword hashPassword)
         {
-            this.configuration = configuration;
             this.dbContext = hospitalDbContext;
             this.hashPassword = hashPassword;
         }
@@ -46,12 +44,13 @@ namespace Hospital.API.Controllers
 
             user.id = Guid.NewGuid();
             user.isAdmin = false;
+            user.phoneNumber = registrationModel.phoneNumber;
             user.genderId = dbContext.genderTable.FirstOrDefault(
-                x => x.genderName == registrationModel.gender).id;
+            x => x.genderName == registrationModel.gender).id;
 
             if(!Regex.IsMatch(registrationModel.mail, emailPattern) || isIdenticalMail(registrationModel.mail))
             {
-                return NotFound("Поштова скринька введена вами уже використовується або невірна");
+                return NotFound();
             }
 
             user.mail = registrationModel.mail;
@@ -81,7 +80,6 @@ namespace Hospital.API.Controllers
                     id = Guid.NewGuid(),
                     userId = user.id,
                     additionalInformation = null,
-                    phoneNumber = "+380981086166"
                 });
             }
             await Authenticate(user.id.ToString());
@@ -101,7 +99,7 @@ namespace Hospital.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-            var searchMail = dbContext.userTable.FirstOrDefault(x=>x.mail == loginModel.mail).mail;
+            var searchMail = dbContext.userTable.FirstOrDefault(x => x.mail == loginModel.mail).mail;
 
             if(searchMail == default ||
                !hashPassword.Verify(loginModel.password, 
@@ -110,14 +108,8 @@ namespace Hospital.API.Controllers
             }
 
             var userId = dbContext.userTable.FirstOrDefault(x => x.mail == loginModel.mail).id;
-            var userMail = dbContext.userTable.FirstOrDefault(x => x.mail == loginModel.mail).mail.ToString();
 
             await Authenticate(userId.ToString());
-
-            //HttpContext.Session.SetString("Id", userId.ToString());
-            //HttpContext.Session.SetString("Mail", userMail);
-
-
             return Ok();
         }
 
@@ -126,7 +118,6 @@ namespace Hospital.API.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> logout()
         {
-            //HttpContext.Session.Clear();
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return Ok();

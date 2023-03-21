@@ -1,4 +1,6 @@
-﻿namespace Hospital.API.Models.ViewModels
+﻿using System.IO;
+
+namespace Hospital.API.Models.ViewModels
 {
     public class RegistrationModel
     {
@@ -8,5 +10,7 @@
         public string password { get; set; }
         public string mail { get; set; }
         public string gender { get; set; }
+
+        public string phoneNumber { get; set; }
     }
 }

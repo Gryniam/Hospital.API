@@ -22,30 +22,6 @@ namespace Hospital.API.Models.ViewModels
 
         public string base64StringPhoto { get; set; }
 
-        public PatientProfile patientProfile { get; set; }
-
-        public DoctorProfile doctorProfile { get; set; }
-
-        public UserProfileModel()
-        {
-            patientProfile = new PatientProfile();
-        }
-
     }
 
-    public class PatientProfile
-    {
-        
-        public List<Appoiment> appoiments { get; set; }
-        public List<Case> cases { get; set; }
-    }
-
-    public class DoctorProfile
-    {
-        public List<Appoiment> appoimentsToMe { get; set; }
-
-        public List<Case> casesToMe { get; set; }
-
-        public List<Work> doctorJobs { get; set; }
-    }
 }

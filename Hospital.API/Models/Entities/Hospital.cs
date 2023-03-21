@@ -38,5 +38,6 @@ namespace Hospital.API.Models.Entities
         public string contactNumber { get; set; }
 
         public string description { get; set; }
+        public string adressDescription { get; set; }
     }
 }

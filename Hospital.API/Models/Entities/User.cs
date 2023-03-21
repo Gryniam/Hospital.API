@@ -18,6 +18,7 @@ namespace Hospital.API.Models.Entities
         public string passwordHash { get; set; }
         public string mail { get; set; }
         public int genderId { get; set; }
+        public int birthYear { get; set; }
         public int Age { get; set; }
         public bool isAdmin { get; set; }
         [NotMapped]
@@ -27,5 +28,7 @@ namespace Hospital.API.Models.Entities
         public Guid userPictureId { get; set; }
         [NotMapped]
         public byte[] userPicture { get; set; }
+
+        public string phoneNumber { get; set; }
     }
 }

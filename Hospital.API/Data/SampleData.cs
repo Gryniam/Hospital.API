@@ -276,10 +276,13 @@ namespace Hospital.API.Data
                     name = "Владислав",
                     middleName = "Іванович",
                     passwordHash = p.Hash("passwordOne"),
+                    Age = 21,
+                    birthYear = 2002,
                     mail = "muzikaeng@gmail.com",
                     genderId = dbContext.genderTable.First(x=>x.genderName == "Чоловік").id,
                     isAdmin = true,
-                    userPictureId = pictureId
+                    userPictureId = pictureId,
+                    phoneNumber = "+380981086166"
                 });
                 dbContext.patientTable.Add(new Patient
                 {
@@ -298,10 +301,13 @@ namespace Hospital.API.Data
                     surname = "Гриньків",
                     name = "Олег",
                     middleName = "Іванович",
+                    Age = 18,
+                    birthYear = 2005,
                     passwordHash = p.Hash("passwordTwo"),
                     mail = "muzikager@gmail.com",
                     genderId = dbContext.genderTable.First(x => x.genderName == "Чоловік").id,
-                    isAdmin = true
+                    isAdmin = true,
+                    phoneNumber = "+380981086166"
                 }) ;
                 dbContext.patientTable.Add(new Patient
                 {
