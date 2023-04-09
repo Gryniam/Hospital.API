@@ -41,6 +41,10 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             user.passwordHash = hashPassword.Hash(registrationModel.password);
             user.userPictureId = Guid.NewGuid();
 
+            user.birthDate = registrationModel.birthDate;
+            user.Age = DateTime.Now.Year - user.birthDate.Year;
+            user.settlementId = dbContext.settlementTable.Where(x => x.name == registrationModel.settlementName).FirstOrDefault().id;
+
             dbContext.userPictureTable.Add(new UserPicture
             {
                 id = user.userPictureId,

@@ -86,8 +86,6 @@ namespace Hospital.API.Controllers
             return Json(listOfAppoiments);
         }
 
-
-
         [HttpGet("cases")]
         [Authorize]
         public ActionResult<List<CaseModel>> getCases()

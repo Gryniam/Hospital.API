@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hospital.API.Migrations
 {
     [DbContext(typeof(HospitalDbContext))]
-    [Migration("20230318013405_Dude")]
-    partial class Dude
+    [Migration("20230409215724_First init")]
+    partial class Firstinit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -143,20 +143,6 @@ namespace Hospital.API.Migrations
                     b.ToTable("casesStatusTable");
                 });
 
-            modelBuilder.Entity("Hospital.API.Models.Entities.Country", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("countryTable");
-                });
-
             modelBuilder.Entity("Hospital.API.Models.Entities.Departament", b =>
                 {
                     b.Property<Guid>("id")
@@ -250,11 +236,11 @@ namespace Hospital.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("contactNumber")
+                    b.Property<string>("adressDescription")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("countryId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("contactNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("description")
                         .HasColumnType("nvarchar(max)");
@@ -400,9 +386,6 @@ namespace Hospital.API.Migrations
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("countryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("name")
@@ -582,6 +565,9 @@ namespace Hospital.API.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("birthDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("genderId")
                         .HasColumnType("int");
 
@@ -599,6 +585,12 @@ namespace Hospital.API.Migrations
 
                     b.Property<string>("passwordHash")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("phoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("settlementId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("surname")
                         .HasColumnType("nvarchar(max)");

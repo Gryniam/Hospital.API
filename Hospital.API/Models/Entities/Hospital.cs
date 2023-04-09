@@ -12,12 +12,6 @@ namespace Hospital.API.Models.Entities
         [Key]
         public Guid id { get; set; }
         public string name { get; set; }
-        public Guid countryId { get; set; }
-        [NotMapped]
-        public Country country
-        {
-            get; set;
-        }
         public Guid regionId { get; set; }
         [NotMapped]
         public Region region { get; set; }

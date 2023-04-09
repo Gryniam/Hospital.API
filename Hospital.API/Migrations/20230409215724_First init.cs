@@ -48,7 +48,8 @@ namespace Hospital.API.Migrations
                     patientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     doctorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     timeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    officeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    officeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    dateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,7 +73,7 @@ namespace Hospital.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    patiendId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    patientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     doctorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     diseaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     caseStatusId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -84,18 +85,6 @@ namespace Hospital.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_caseTable", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "countryTable",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_countryTable", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -170,13 +159,13 @@ namespace Hospital.API.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    countryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     regionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     districtId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     settlementId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     typeId = table.Column<int>(type: "int", nullable: false),
                     contactNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    adressDescription = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -271,8 +260,7 @@ namespace Hospital.API.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    countryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -430,9 +418,12 @@ namespace Hospital.API.Migrations
                     passwordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     mail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     genderId = table.Column<int>(type: "int", nullable: false),
+                    birthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
                     isAdmin = table.Column<bool>(type: "bit", nullable: false),
-                    userPictureId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    userPictureId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    phoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    settlementId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -474,9 +465,6 @@ namespace Hospital.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "caseTable");
-
-            migrationBuilder.DropTable(
-                name: "countryTable");
 
             migrationBuilder.DropTable(
                 name: "departamentTable");

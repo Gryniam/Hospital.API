@@ -12,11 +12,6 @@ namespace Hospital.API.Data
     {
         public static void fillBasicData(HospitalDbContext dbContext)
         {
-           if(!dbContext.countryTable.Any())
-           {
-                dbContext.countryTable.Add(new Country { name = "Україна" });
-                dbContext.SaveChanges();
-            }
           
            if(!dbContext.diseaseTable.Any()) {
                 dbContext.diseaseTable.Add(new Disease
@@ -72,8 +67,7 @@ namespace Hospital.API.Data
                 dbContext.regionTable.Add(new Region
                 {
                     id = Guid.NewGuid(),
-                    name = "Івано-Франківська",
-                    countryId = dbContext.countryTable.First(x=>x.name == "Україна").id
+                    name = "Івано-Франківська"
                 });
                 dbContext.SaveChanges();
             }
@@ -277,7 +271,7 @@ namespace Hospital.API.Data
                     middleName = "Іванович",
                     passwordHash = p.Hash("passwordOne"),
                     Age = 21,
-                    birthYear = 2002,
+                    birthDate = new DateTime(2002, 05, 22),
                     mail = "muzikaeng@gmail.com",
                     genderId = dbContext.genderTable.First(x=>x.genderName == "Чоловік").id,
                     isAdmin = true,
@@ -302,7 +296,7 @@ namespace Hospital.API.Data
                     name = "Олег",
                     middleName = "Іванович",
                     Age = 18,
-                    birthYear = 2005,
+                    birthDate = new DateTime(2002, 05, 22),
                     passwordHash = p.Hash("passwordTwo"),
                     mail = "muzikager@gmail.com",
                     genderId = dbContext.genderTable.First(x => x.genderName == "Чоловік").id,
@@ -389,7 +383,6 @@ namespace Hospital.API.Data
                 {
                     id = Guid.NewGuid(),
                     name = "Коломийська районна лікарня",
-                    countryId = dbContext.countryTable.First(x => x.name == "Україна").id,
                     regionId = dbContext.regionTable.First(x => x.name == "Івано-Франківська").id,
                     districtId = dbContext.districtTable.First(x=>x.name == "Коломийський").id,
                     settlementId = dbContext.settlementTable.First(x=>x.name == "Коломия").id,

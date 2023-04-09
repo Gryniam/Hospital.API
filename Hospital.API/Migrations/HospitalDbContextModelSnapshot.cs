@@ -140,20 +140,6 @@ namespace Hospital.API.Migrations
                     b.ToTable("casesStatusTable");
                 });
 
-            modelBuilder.Entity("Hospital.API.Models.Entities.Country", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("countryTable");
-                });
-
             modelBuilder.Entity("Hospital.API.Models.Entities.Departament", b =>
                 {
                     b.Property<Guid>("id")
@@ -252,9 +238,6 @@ namespace Hospital.API.Migrations
 
                     b.Property<string>("contactNumber")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("countryId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("description")
                         .HasColumnType("nvarchar(max)");
@@ -400,9 +383,6 @@ namespace Hospital.API.Migrations
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("countryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("name")
@@ -582,8 +562,8 @@ namespace Hospital.API.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<int>("birthYear")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("birthDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("genderId")
                         .HasColumnType("int");
@@ -605,6 +585,9 @@ namespace Hospital.API.Migrations
 
                     b.Property<string>("phoneNumber")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("settlementId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("surname")
                         .HasColumnType("nvarchar(max)");

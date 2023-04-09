@@ -23,8 +23,6 @@ namespace Hospital.API.Data
 
         public DbSet<CaseStatus> casesStatusTable { get; set; }
 
-        public DbSet<Country> countryTable { get; set; }
-
         public DbSet<Departament> departamentTable { get; set; }
 
         public DbSet<Disease> diseaseTable { get; set; }

@@ -11,7 +11,5 @@ namespace Hospital.API.Models.Entities
         [Key]
         public Guid id { get; set; }
         public string name { get; set; }
-
-        public Guid countryId { get; set; }
     }
 }

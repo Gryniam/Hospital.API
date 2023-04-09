@@ -40,6 +40,19 @@ namespace Hospital.API.Controllers
             this.doctor = doctor;
         }
 
+        [HttpGet("register")]
+        public IActionResult RegisterUser()
+        {
+            LocationView locationView = new LocationView
+            {
+                regions = dbContext.regionTable.ToList(),
+                districts = dbContext.districtTable.ToList(),
+                settlements = dbContext.settlementTable.ToList()
+            };
+
+            return Json(locationView);
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegistrationModel registrationModel, bool isDoctor)
         {
@@ -50,6 +63,7 @@ namespace Hospital.API.Controllers
                 if(isDoctor)
                 {
                     doctor.addDoctor(userId);
+
                 }
                 await Authenticate(userId.ToString());
                 await dbContext.SaveChangesAsync();
@@ -57,6 +71,14 @@ namespace Hospital.API.Controllers
             }
             else
             {
+                if(dbContext.userTable.Any(x=> x.mail == registrationModel.mail))
+                {
+                    return NotFound("Mail does exist");
+                }
+                if(dbContext.userTable.Any(x => x.phoneNumber == registrationModel.phoneNumber))
+                {
+                    return NotFound("Phone number does exist");
+                }
                 return NotFound();
             }
 
