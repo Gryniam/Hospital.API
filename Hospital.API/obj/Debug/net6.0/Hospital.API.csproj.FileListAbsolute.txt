@@ -8,6 +8,8 @@ C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Hospital.API.
 C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Azure.Core.dll
 C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Azure.Identity.dll
 C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Humanizer.dll
+C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.Google.dll
+C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Microsoft.Data.SqlClient.dll
 C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.dll
@@ -85,5 +87,3 @@ C:\Users\muzik\source\repos\Hospital\Hospital.API\obj\Debug\net6.0\refint\Hospit
 C:\Users\muzik\source\repos\Hospital\Hospital.API\obj\Debug\net6.0\Hospital.API.pdb
 C:\Users\muzik\source\repos\Hospital\Hospital.API\obj\Debug\net6.0\Hospital.API.genruntimeconfig.cache
 C:\Users\muzik\source\repos\Hospital\Hospital.API\obj\Debug\net6.0\ref\Hospital.API.dll
-C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
-C:\Users\muzik\source\repos\Hospital\Hospital.API\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.Google.dll

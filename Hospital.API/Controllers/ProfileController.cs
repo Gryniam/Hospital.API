@@ -1,4 +1,5 @@
 ﻿using Hospital.API.Data;
+using Hospital.API.Data.DataManager.Interfaces;
 using Hospital.API.Models.Entities;
 using Hospital.API.Models.ViewModels;
 using Microsoft.AspNetCore.Authentication;
@@ -22,11 +23,15 @@ namespace Hospital.API.Controllers
     [Route("/[controller]")]
     public class ProfileController : Controller
     {
-        private HospitalDbContext dbContext;
+        private readonly HospitalDbContext dbContext;
+        private readonly IUser userContext;
+        private readonly IPatient patientContext;
 
-        public ProfileController(HospitalDbContext dbContext)
+        public ProfileController(HospitalDbContext dbContext, IUser user, IPatient patient)
         {
             this.dbContext = dbContext;
+            this.userContext = user;
+            this.patientContext = patient;
         }
 
         [HttpGet]
@@ -35,51 +40,24 @@ namespace Hospital.API.Controllers
         {
             UserProfileModel userProfile = new UserProfileModel();
 
-            User user = dbContext.userTable.Find(Guid.Parse(User.Identity.Name));
+            User user = userContext.getUserById(Guid.Parse(User.Identity.Name));
 
             userProfile = new UserProfileModel
             {
-                patientId = dbContext.patientTable.First(x => x.UserId == user.id).id,
+                patientId = patientContext.getPatientByUserId(user.id).id,
                 surName = user.surname,
                 name = user.name,
                 middleName = user.middleName,
                 age = user.Age,
                 gender = dbContext.genderTable.Find(user.genderId).genderName,
                 base64StringPhoto = null,
-                //patientProfile = new PatientProfile()
             };
-
-            //userProfile.patientProfile.appoiments = dbContext.appoimentTable.Where(
-            //        x => x.patientId == userProfile.patientId).ToList();
-            //userProfile.patientProfile.cases = dbContext.caseTable.Where(
-            //        x => x.patientId == userProfile.patientId).ToList();
 
             byte[] arr = dbContext.userPictureTable.FirstOrDefault(x => x.id == user.userPictureId).picture;
             if(arr != null || arr!= default)
             {
                 userProfile.base64StringPhoto = Convert.ToBase64String(arr);
-            }
-
-            //fillAppoimentList(userProfile.patientProfile.appoiments);
-            //fillCaseList(userProfile.patientProfile.cases);
-
-
-            //var a = dbContext.doctorTable.FirstOrDefault();
-            //Guid? doctorId = dbContext.doctorTable.FirstOrDefault(x => x.userId == user.id).id;
-
-            //if(doctorId != default || doctorId != null)
-            //{
-            //    userProfile.doctorProfile = new DoctorProfile { 
-            //        appoimentsToMe = dbContext.appoimentTable.Where(
-            //        x => x.doctorId == doctorId).ToList(),
-            //        casesToMe = dbContext.caseTable.Where(
-            //        x => x.doctorId == doctorId).ToList(),
-            //        doctorJobs = dbContext.workTable.Where(
-            //        x => x.doctorId == doctorId).ToList()
-            //    };
-            //    fillAppoimentList(userProfile.doctorProfile.appoimentsToMe);
-            //    fillCaseList(userProfile.doctorProfile.casesToMe);
-            //}          
+            }         
             
             return Ok(userProfile);
         }
@@ -94,29 +72,12 @@ namespace Hospital.API.Controllers
                 appoiment.office = dbContext.officeTable.Find(appoiment.officeId);
             }
         }
-        private void fillCaseList(List<Case> list)
-        {
-            foreach (var Case in list)
-            {
-                Case.patient = dbContext.patientTable.Find(Case.patientId);
-                
-
-
-
-
-                Case.doctor = dbContext.doctorTable.Find(Case.doctorId);
-                Case.disease = dbContext.diseaseTable.Find(Case.diseaseId);
-                Case.caseStatus = dbContext.casesStatusTable.Find(Case.caseStatusId);
-                Case.treatment = dbContext.treatmentTable.Where(x => x.caseId == Case.id).ToList();
-            }
-        }
-
+        
         [HttpGet("appoiments")]
         [Authorize]
         public ActionResult<List<Appoiment>> getAppoiments()
         {
-            var patientId = dbContext.patientTable.FirstOrDefault(
-                x=>x.UserId == Guid.Parse(User.Identity.Name)).id;
+            var patientId = patientContext.getPatientByUserId(Guid.Parse(User.Identity.Name)).id;
 
             var listOfAppoiments = dbContext.appoimentTable.Where(x=>x.patientId == patientId).ToList();
 
@@ -131,8 +92,7 @@ namespace Hospital.API.Controllers
         [Authorize]
         public ActionResult<List<CaseModel>> getCases()
         {
-            var patientId = dbContext.patientTable.FirstOrDefault(
-                x => x.UserId == Guid.Parse(User.Identity.Name)).id;
+            var patientId = patientContext.getPatientByUserId(Guid.Parse(User.Identity.Name)).id;
 
             var listOfCases = dbContext.caseTable.Where(x => x.patientId == patientId).ToList();
 
@@ -140,14 +100,14 @@ namespace Hospital.API.Controllers
 
             foreach (var item in listOfCases)
             {
-                var userId = dbContext.userTable.FirstOrDefault(x => x.id == dbContext.patientTable.Find(item.patientId).UserId).id;
+                var userId = userContext.getUserByPatientId(item.patientId);
 
                 cases.Add(new CaseModel
                 {
                     id = item.id,
-                    patientName = $"{dbContext.userTable.FirstOrDefault(x => x.id == userId).surname} " +
-                    $"{dbContext.userTable.FirstOrDefault(x => x.id == userId).name} " +
-                    $"{dbContext.userTable.FirstOrDefault(x => x.id == userId).middleName}",
+                    patientName = $"{dbContext.userTable.Find(userId).surname} " +
+                    $"{dbContext.userTable.Find(userId).name} " +
+                    $"{dbContext.userTable.Find(userId).middleName}",
                     caseStatus = dbContext.casesStatusTable.Find(item.caseStatusId).statusName,
                     office = dbContext.officeTable.Find(item.officeId),
                     diseaseName = dbContext.diseaseTable.Find(item.diseaseId).name,

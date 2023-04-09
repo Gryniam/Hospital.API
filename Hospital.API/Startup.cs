@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Google;
+using Hospital.API.Data.DataManager.Interfaces;
+using Hospital.API.Data.DataManager.EntityFrameworkCore;
 
 namespace Hospital.API
 {
@@ -37,14 +39,6 @@ namespace Hospital.API
         {
             services.AddDistributedMemoryCache();
 
-            //services.AddSession(options =>
-            //{
-            //    options.Cookie.Name = "HospitalSession";
-            //    options.IdleTimeout = TimeSpan.FromHours(96);
-            //    options.Cookie.HttpOnly = true;
-            //    options.Cookie.IsEssential = true;
-            //});
-
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -54,22 +48,13 @@ namespace Hospital.API
                 });
 
 
-            //services.AddAuthorization();
+            services.AddAuthorization();
 
-
-            //services.AddAuthentication(options =>
-            //{
-            //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-            //})
-            //.AddCookie(options =>
-            //{
-            //    options.Cookie.Name = "HospitalAuthCoockie";
-            //    options.LoginPath = "/Auth/Login";
-            //    options.Cookie.MaxAge = TimeSpan.FromHours(96);
-            //});
 
             services.AddScoped<HashPassword>();
+            services.AddTransient<IUser, EFUser>();
+            services.AddTransient<IPatient, EFPatient>();
+            services.AddTransient<IDoctor, EFDoctor>();
 
             services.AddHttpContextAccessor();
             services.AddControllers();
