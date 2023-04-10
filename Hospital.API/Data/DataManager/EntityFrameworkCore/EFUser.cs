@@ -29,6 +29,9 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             user.id = id;
             user.isAdmin = false;
             user.phoneNumber = registrationModel.phoneNumber;
+            user.surname = registrationModel.surname;
+            user.name = registrationModel.name;
+            user.middleName = registrationModel.middleName;
             user.genderId = dbContext.genderTable.Where(x => x.genderName == registrationModel.gender).FirstOrDefault().id;
 
             if (user.genderId == default)
@@ -43,7 +46,7 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             user.passwordHash = hashPassword.Hash(registrationModel.password);
             user.userPictureId = Guid.NewGuid();
 
-            user.birthDate = registrationModel.birthDate;
+            user.birthDate = DateTime.Parse(registrationModel.birthDate).Date;
             user.Age = DateTime.Now.Year - user.birthDate.Year;
             user.settlementId = dbContext.settlementTable.Where(x => x.name == registrationModel.settlementName).FirstOrDefault().id;
 

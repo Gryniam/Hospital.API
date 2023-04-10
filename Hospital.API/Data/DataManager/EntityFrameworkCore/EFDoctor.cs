@@ -1,6 +1,7 @@
 ﻿using Hospital.API.Data.DataManager.Interfaces;
 using Hospital.API.Models.Entities;
 using System;
+using System.Linq;
 
 namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 {
@@ -25,6 +26,33 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         public Doctor getDoctorById(Guid id)
         {
            return dbContext.doctorTable.Find(id);
+        }
+
+        public Doctor getDoctorByUserId(Guid userId)
+        {
+
+            var result = dbContext.doctorTable.Where(x => x.userId == userId).FirstOrDefault();
+
+            if(result != default)
+            {
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public bool isDoctorExist(Guid userId)
+        {
+            if(dbContext.doctorTable.Any(x => x.userId == userId))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

@@ -23,6 +23,6 @@ namespace Hospital.API.Models.ViewModels
         public string anamnesis { get; set; }
         public string treatmentInformation { get; set; }
 
-        public DateTime createDate { get; set; }
+        public string createDate { get; set; }
     }
 }

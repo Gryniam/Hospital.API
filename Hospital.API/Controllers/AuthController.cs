@@ -29,15 +29,15 @@ namespace Hospital.API.Controllers
     {
         private readonly HospitalDbContext dbContext;
         private readonly HashPassword hashPassword;
-        private readonly IUser user;
-        private readonly IDoctor doctor;
+        private readonly IUser userContext;
+        private readonly IDoctor doctorContext;
 
         public AuthController(HospitalDbContext hospitalDbContext, HashPassword hashPassword, IUser user, IDoctor doctor)
         {
             this.dbContext = hospitalDbContext;
             this.hashPassword = hashPassword;
-            this.user = user;
-            this.doctor = doctor;
+            this.userContext = user;
+            this.doctorContext = doctor;
         }
 
         [HttpGet("register")]
@@ -58,11 +58,11 @@ namespace Hospital.API.Controllers
         {
             Guid userId = Guid.NewGuid();
             
-            if(user.addUser(registrationModel, userId))
+            if(userContext.addUser(registrationModel, userId))
             {
                 if(isDoctor)
                 {
-                    doctor.addDoctor(userId);
+                    doctorContext.addDoctor(userId);
 
                 }
                 await Authenticate(userId.ToString());
@@ -88,15 +88,15 @@ namespace Hospital.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-            var searchMail = user.getUserByMail(loginModel.mail).mail;
+            var searchMail = userContext.getUserByMail(loginModel.mail).mail;
 
             if(searchMail == default ||
                !hashPassword.Verify(loginModel.password, 
-               user.getUserByMail(loginModel.mail).passwordHash)) {
+               userContext.getUserByMail(loginModel.mail).passwordHash)) {
                 return NotFound();
             }
 
-            var userId = user.getUserByMail(loginModel.mail).id;
+            var userId = userContext.getUserByMail(loginModel.mail).id;
 
             await Authenticate(userId.ToString());
             return Ok();
@@ -115,10 +115,21 @@ namespace Hospital.API.Controllers
 
         private async Task Authenticate(string userId)
         {
+            Claim claim;
+            if (doctorContext.isDoctorExist(Guid.Parse(userId)))
+            {
+                claim = new Claim(ClaimsIdentity.DefaultRoleClaimType, "Doctor");
+            }
+            else
+            {
+                claim = new Claim(ClaimsIdentity.DefaultRoleClaimType, "Patient");
+            }
+
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, userId)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, userId),
+                claim
             };
 
             ClaimsIdentity id = 

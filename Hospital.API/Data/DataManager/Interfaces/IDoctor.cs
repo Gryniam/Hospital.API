@@ -8,5 +8,9 @@ namespace Hospital.API.Data.DataManager.Interfaces
         void addDoctor(Guid id);
 
         Doctor getDoctorById(Guid id);  
+
+        Doctor getDoctorByUserId(Guid userId);
+
+        bool isDoctorExist(Guid userId);
     }
 }
