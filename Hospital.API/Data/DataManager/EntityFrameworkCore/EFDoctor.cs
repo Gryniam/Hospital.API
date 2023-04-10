@@ -21,5 +21,10 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
                 additionalInformation = null,
             }) ;
         }
+
+        public Doctor getDoctorById(Guid id)
+        {
+           return dbContext.doctorTable.Find(id);
+        }
     }
 }

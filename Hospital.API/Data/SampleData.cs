@@ -332,11 +332,14 @@ namespace Hospital.API.Data
 
             if (!dbContext.timeTable.Any())
             {
-                for(int i = 10; i<= 18; i++)
+                for (int i = 10; i<= 18; i++)
                 {
                     dbContext.timeTable.Add(new Time
                     {
                         id = Guid.NewGuid(),
+                        doctorId = dbContext.doctorTable.First(
+                        x => x.userId == dbContext.userTable.First(
+                            x => x.mail == "muzikager@gmail.com").id).id,
                         time = $"{i}:00"
                     });
                 }

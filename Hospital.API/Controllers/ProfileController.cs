@@ -26,12 +26,14 @@ namespace Hospital.API.Controllers
         private readonly HospitalDbContext dbContext;
         private readonly IUser userContext;
         private readonly IPatient patientContext;
+        private readonly IHospital hospital;
 
-        public ProfileController(HospitalDbContext dbContext, IUser user, IPatient patient)
+        public ProfileController(HospitalDbContext dbContext, IUser user, IPatient patient, IHospital hospital)
         {
             this.dbContext = dbContext;
             this.userContext = user;
             this.patientContext = patient;
+            this.hospital = hospital;
         }
 
         [HttpGet]
@@ -62,33 +64,46 @@ namespace Hospital.API.Controllers
             return Ok(userProfile);
         }
 
-        private void fillAppoimentList(List<Appoiment> list)
-        {
-            foreach (var appoiment in list)
-            {
-                appoiment.patient = dbContext.patientTable.Find(appoiment.patientId);
-                appoiment.doctor = dbContext.doctorTable.Find(appoiment.doctorId);
-                appoiment.timeOnly = TimeOnly.Parse(dbContext.timeTable.Find(appoiment.timeId).time);
-                appoiment.office = dbContext.officeTable.Find(appoiment.officeId);
-            }
-        }
         
         [HttpGet("appoiments")]
         [Authorize]
-        public ActionResult<List<Appoiment>> getAppoiments()
+        public ActionResult<List<Appoiment>> getAppoimentsForPatient()
         {
             var patientId = patientContext.getPatientByUserId(Guid.Parse(User.Identity.Name)).id;
 
             var listOfAppoiments = dbContext.appoimentTable.Where(x=>x.patientId == patientId).ToList();
 
+            List<AppoimentModel> appoiments = new List<AppoimentModel>();
 
-            fillAppoimentList(listOfAppoiments);
+            foreach(var item in listOfAppoiments)
+            {
+                var userId = userContext.getUserByPatientId(item.patientId);
+                item.office = dbContext.officeTable.Find(item.officeId);
+                appoiments.Add(new AppoimentModel
+                {
+                    id = item.id,
+                    patientName = $"{dbContext.userTable.Find(userId).surname} " +
+                    $"{dbContext.userTable.Find(userId).name} " +
+                    $"{dbContext.userTable.Find(userId).middleName}",
+                    doctorName = $"{userContext.getUserByDoctorId(item.doctorId).surname}" +
+                    $"{userContext.getUserByDoctorId(item.doctorId).name} " +
+                    $"{userContext.getUserByDoctorId(item.doctorId).middleName}",
+                    indexesOfPatient = dbContext.indexesTable.Find(userId),
+                    officeName = item.office.name,
+                    officeNumberInHospital = item.office.numberInHospital,
+                    officeDesc = item.office.additionalInformation,
+                    hospitalName = "Тестується",
+                    Date = item.dateTime
+
+                }) ;
+            }
+
             return Json(listOfAppoiments);
         }
 
         [HttpGet("cases")]
         [Authorize]
-        public ActionResult<List<CaseModel>> getCases()
+        public ActionResult<List<CaseModel>> getCasesForPatient()
         {
             var patientId = patientContext.getPatientByUserId(Guid.Parse(User.Identity.Name)).id;
 
@@ -109,14 +124,12 @@ namespace Hospital.API.Controllers
                     caseStatus = dbContext.casesStatusTable.Find(item.caseStatusId).statusName,
                     office = dbContext.officeTable.Find(item.officeId),
                     diseaseName = dbContext.diseaseTable.Find(item.diseaseId).name,
-                    //ВИПИСАТИ ЦЕ ЯК ОКРЕМИЙ МЕТОД БО ПИЗДЕЦЬ
-                    //hospitalName = dbContext.hospitalTable.Find(dbContext.departamentTable.Find(dbContext.officesTable.FirstOrDefault(
-                    //    x => x.officeId == item.officeId).id).id).name,
+                    hospitalName = hospital.getHospitalByCase(item).name,
                     anamnesis = item.anamnesis,
                     treatmentInformation = item.treatmentInformation,
                     createDate = item.createDate
 
-                });
+                }) ;
             }
             return Json(cases);
         }

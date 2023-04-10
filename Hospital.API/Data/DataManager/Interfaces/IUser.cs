@@ -13,5 +13,7 @@ namespace Hospital.API.Data.DataManager.Interfaces
         User getUserByMail(string mail);
 
         User getUserByPatientId(Guid id);
+
+        User getUserByDoctorId(Guid id);
     }
 }

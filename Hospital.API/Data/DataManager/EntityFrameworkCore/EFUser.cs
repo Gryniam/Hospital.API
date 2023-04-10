@@ -13,12 +13,14 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         private readonly HospitalDbContext dbContext;
         private readonly HashPassword hashPassword;
         private readonly IPatient Ipatient;
+        private readonly IDoctor Idoctor;
 
-        public EFUser(HospitalDbContext context, HashPassword hashPassword, IPatient ipatient)
+        public EFUser(HospitalDbContext context, HashPassword hashPassword, IPatient ipatient, IDoctor iDoctor)
         {
             dbContext = context;
             this.hashPassword = hashPassword;
             Ipatient = ipatient;
+            Idoctor = iDoctor;  
         }
         public bool addUser(RegistrationModel registrationModel, Guid id)
         {
@@ -57,6 +59,8 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             return true;
         }
 
+        
+
         public User getUserById(Guid id)
         {
             throw new NotImplementedException();
@@ -70,6 +74,10 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         public User getUserByPatientId(Guid id)
         {
             return dbContext.userTable.Find(Ipatient.getPatientById(id).UserId);
+        }
+        public User getUserByDoctorId(Guid id)
+        {
+            return dbContext.userTable.Find(Idoctor.getDoctorById(id).userId);
         }
 
         private bool isIdenticalMail(string mail)
