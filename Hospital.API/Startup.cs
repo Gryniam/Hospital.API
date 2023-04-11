@@ -73,6 +73,7 @@ namespace Hospital.API
                    );
             });
 
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,11 +88,11 @@ namespace Hospital.API
             }
 
             app.UseStaticFiles();
-            app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCookiePolicy();
 
             app.UseCors();
+            app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
 
