@@ -43,7 +43,7 @@ namespace Hospital.API.Controllers
             this.Configuration = conf;
         }
 
-        [HttpGet("register")]
+        [HttpGet]
         public IActionResult RegisterUser()
         {
             LocationView locationView = new LocationView
