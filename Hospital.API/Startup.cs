@@ -39,22 +39,35 @@ namespace Hospital.API
         {
             services.AddDistributedMemoryCache();
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.Cookie.Name = "HospitalAuthCoockie";
-                    options.LoginPath = "/Auth/Login";
-                    options.Cookie.MaxAge = TimeSpan.FromHours(96);
-                });
+                    ValidIssuer = Configuration["JWT:Issuer"],
+                    ValidAudience = Configuration["JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey
+                    (Encoding.UTF8.GetBytes(Configuration["JWT:Key"])),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = false,
+                    ValidateIssuerSigningKey = true
+                };
+            });
 
 
             services.AddAuthorization();
 
 
             services.AddScoped<HashPassword>();
-            services.AddTransient<IUser, EFUser>();
-            services.AddTransient<IPatient, EFPatient>();
-            services.AddTransient<IDoctor, EFDoctor>();
+            services.AddScoped<IUser, EFUser>();
+            services.AddScoped<IPatient, EFPatient>();
+            services.AddScoped<IDoctor, EFDoctor>();
+            services.AddScoped<IHospital, EFHospital>();
 
             services.AddHttpContextAccessor();
             services.AddControllers();

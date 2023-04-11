@@ -19,6 +19,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Hospital.API.Data.DataManager.Interfaces;
 
 namespace Hospital.API.Controllers
@@ -31,13 +32,15 @@ namespace Hospital.API.Controllers
         private readonly HashPassword hashPassword;
         private readonly IUser userContext;
         private readonly IDoctor doctorContext;
+        public IConfiguration Configuration { get; }
 
-        public AuthController(HospitalDbContext hospitalDbContext, HashPassword hashPassword, IUser user, IDoctor doctor)
+        public AuthController(HospitalDbContext hospitalDbContext, HashPassword hashPassword, IUser user, IDoctor doctor, IConfiguration conf)
         {
             this.dbContext = hospitalDbContext;
             this.hashPassword = hashPassword;
             this.userContext = user;
             this.doctorContext = doctor;
+            this.Configuration = conf;
         }
 
         [HttpGet("register")]
@@ -53,21 +56,39 @@ namespace Hospital.API.Controllers
             return Json(locationView);
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] RegistrationModel registrationModel, bool isDoctor)
+        public async Task<IActionResult> RegisterUser([FromBody] RegistrationModel registrationModel)
         {
             Guid userId = Guid.NewGuid();
-            
-            if(userContext.addUser(registrationModel, userId))
-            {
-                if(isDoctor)
-                {
-                    doctorContext.addDoctor(userId);
 
-                }
-                await Authenticate(userId.ToString());
+            if (userContext.addUser(registrationModel, userId))
+            {
+                var issuer = Configuration["JWT:Issuer"];
+                var audience = Configuration["JWT:Audience"];
+                var key = Encoding.ASCII.GetBytes(Configuration["JWT:Key"]);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim("Id", Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Name, userId.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Jti,
+                    Guid.NewGuid().ToString())
+                }),
+                    Expires = DateTime.UtcNow.AddDays(3),
+                    Issuer = issuer,
+                    Audience = audience,
+                    SigningCredentials = new SigningCredentials
+                    (new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha512Signature)
+                };
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var jwtToken = tokenHandler.WriteToken(token);
+
                 await dbContext.SaveChangesAsync();
-                return Ok();
+                return Ok(jwtToken);
             }
             else
             {
@@ -85,6 +106,7 @@ namespace Hospital.API.Controllers
             
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
@@ -98,8 +120,29 @@ namespace Hospital.API.Controllers
 
             var userId = userContext.getUserByMail(loginModel.mail).id;
 
-            await Authenticate(userId.ToString());
-            return Ok();
+            var issuer = Configuration["JWT:Issuer"];
+            var audience = Configuration["JWT:Audience"];
+            var key = Encoding.ASCII.GetBytes(Configuration["JWT:Key"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+            {
+                    new Claim("Id", Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Name, userId.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Jti,
+                    Guid.NewGuid().ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(3),
+                Issuer = issuer,
+                Audience = audience,
+                SigningCredentials = new SigningCredentials
+                (new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha512Signature)
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwtToken = tokenHandler.WriteToken(token);
+            return Ok(jwtToken);
         }
 
 
@@ -113,34 +156,34 @@ namespace Hospital.API.Controllers
         }
 
 
-        private async Task Authenticate(string userId)
-        {
+        //private async Task Authenticate(string userId)
+        //{
 
-            Claim claim;
-            if (doctorContext.isDoctorExist(Guid.Parse(userId)))
-            {
-                claim = new Claim(ClaimsIdentity.DefaultRoleClaimType, "Doctor");
-            }
-            else
-            {
-                claim = new Claim(ClaimsIdentity.DefaultRoleClaimType, "Patient");
-            }
+        //    Claim claim;
+        //    if (doctorContext.isDoctorExist(Guid.Parse(userId)))
+        //    {
+        //        claim = new Claim(ClaimsIdentity.DefaultRoleClaimType, "Doctor");
+        //    }
+        //    else
+        //    {
+        //        claim = new Claim(ClaimsIdentity.DefaultRoleClaimType, "Patient");
+        //    }
 
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, userId),
-                claim
-            };
+        //    var claims = new List<Claim>
+        //    {
+        //        new Claim(ClaimsIdentity.DefaultNameClaimType, userId),
+        //        claim
+        //    };
 
-            ClaimsIdentity id = 
-                new ClaimsIdentity(
-                    claims, "HospitalAuthCoockie", 
-                    ClaimsIdentity.DefaultNameClaimType, 
-                    ClaimsIdentity.DefaultRoleClaimType);
+        //    ClaimsIdentity id = 
+        //        new ClaimsIdentity(
+        //            claims, "HospitalAuthCoockie", 
+        //            ClaimsIdentity.DefaultNameClaimType, 
+        //            ClaimsIdentity.DefaultRoleClaimType);
 
-            await HttpContext.SignInAsync(new ClaimsPrincipal(id));
-        }
+        //    await HttpContext.SignInAsync(new ClaimsPrincipal(id));
+        //}
 
     }
 }

@@ -66,7 +66,7 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 
         public User getUserById(Guid id)
         {
-            throw new NotImplementedException();
+            return dbContext.userTable.Find(id);
         }
 
         public User getUserByMail(string mail)
