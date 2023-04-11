@@ -115,6 +115,7 @@ namespace Hospital.API.Controllers
 
         private async Task Authenticate(string userId)
         {
+
             Claim claim;
             if (doctorContext.isDoctorExist(Guid.Parse(userId)))
             {

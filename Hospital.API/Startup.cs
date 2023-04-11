@@ -64,13 +64,21 @@ namespace Hospital.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hospital.API", Version = "v1" });
             });
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy => policy
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                   );
+            });
 
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, HospitalDbContext context)
         {
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -83,7 +91,7 @@ namespace Hospital.API
             app.UseRouting();
             app.UseCookiePolicy();
 
-
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
 
