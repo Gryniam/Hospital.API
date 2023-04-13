@@ -216,5 +216,15 @@ namespace Hospital.API.Controllers
             return userContext.users.Any(x => x.id == Guid.Parse(User.Identity.Name) && x.isAdmin);
         }
 
+
+
+        [HttpGet("myHospitals")]
+        [Authorize]
+        public ActionResult<List<Models.Entities.Hospital>> getMyHospitals()
+        {
+            var doctorId = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name)).id;
+
+            return hospitalContext.GetHospitalsByOwnerId(doctorId).ToList();
+        }
     }
 }

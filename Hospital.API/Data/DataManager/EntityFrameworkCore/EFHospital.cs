@@ -1,7 +1,9 @@
 ﻿using Hospital.API.Data.DataManager.Interfaces;
 using Hospital.API.Models.Entities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 {
@@ -13,6 +15,8 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         {
             dbContext = context;
         }
+
+        public IEnumerable<Models.Entities.Hospital> GetHospitals => dbContext.hospitalTable;
 
         public Models.Entities.Hospital getHospitalByCase(Case insertedCase)
         {
@@ -42,6 +46,16 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             }
 
 
+        }
+
+        public IEnumerable<Models.Entities.Hospital> GetHospitalsByOwnerId(Guid ownerId)
+        {
+            return dbContext.workTable
+            .Where(w => w.doctorId == ownerId && w.isAdminInHospital)
+            .Join(dbContext.hospitalTable,
+                    work => work.hospitalId,
+                    hospital => hospital.id,
+                    (work, hospital) => hospital);
         }
     }
 }
