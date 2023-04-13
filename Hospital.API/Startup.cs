@@ -68,6 +68,8 @@ namespace Hospital.API
             services.AddScoped<IPatient, EFPatient>();
             services.AddScoped<IDoctor, EFDoctor>();
             services.AddScoped<IHospital, EFHospital>();
+            services.AddScoped<IWork, EFWork>();
+            services.AddScoped<IDepartament, EFDepartament>();
 
             services.AddHttpContextAccessor();
             services.AddControllers();

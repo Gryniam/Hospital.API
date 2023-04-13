@@ -30,14 +30,18 @@ namespace Hospital.API.Controllers
         private readonly IHospital hospitalContext;
         private readonly IDoctor doctorContext;
         private readonly IWork workContext;
+        private readonly IDepartament departamentContext;
 
-        public ProfileController(HospitalDbContext dbContext, IUser user, IPatient patient, IHospital hospital, IDoctor doctor)
+        public ProfileController(HospitalDbContext dbContext, IUser user, IPatient patient, IHospital hospital, IDoctor doctor,
+            IWork work, IDepartament departament)
         {
             this.dbContext = dbContext;
             this.userContext = user;
             this.patientContext = patient;
             this.hospitalContext = hospital;
             this.doctorContext = doctor;
+            this.workContext = work;
+            this.departamentContext = departament;
         }
 
         [HttpGet]
@@ -225,6 +229,15 @@ namespace Hospital.API.Controllers
             var doctorId = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name)).id;
 
             return hospitalContext.GetHospitalsByOwnerId(doctorId).ToList();
+        }
+
+        [HttpGet("myDepartaments")]
+        [Authorize]
+        public ActionResult<List<Departament>> getMyDepartaments()
+        {
+            var doctorId = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name)).id;
+
+            return departamentContext.getDepartamentsByOwnerId(doctorId).ToList();
         }
     }
 }
