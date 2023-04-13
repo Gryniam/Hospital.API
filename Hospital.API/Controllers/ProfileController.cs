@@ -1,4 +1,5 @@
 ﻿using Hospital.API.Data;
+using Hospital.API.Data.DataManager.EntityFrameworkCore;
 using Hospital.API.Data.DataManager.Interfaces;
 using Hospital.API.Models.Entities;
 using Hospital.API.Models.ViewModels;
@@ -28,6 +29,7 @@ namespace Hospital.API.Controllers
         private readonly IPatient patientContext;
         private readonly IHospital hospitalContext;
         private readonly IDoctor doctorContext;
+        private readonly IWork workContext;
 
         public ProfileController(HospitalDbContext dbContext, IUser user, IPatient patient, IHospital hospital, IDoctor doctor)
         {
@@ -57,11 +59,11 @@ namespace Hospital.API.Controllers
                 base64StringPhoto = null,
             };
 
-            byte[] arr = dbContext.userPictureTable.FirstOrDefault(x => x.id == user.userPictureId).picture;
-            if(arr != null || arr!= default)
+            if (dbContext.userPictureTable.Where(x=>x.id == user.userPictureId && x.picture != null).Any())
             {
+                byte[] arr = dbContext.userPictureTable.FirstOrDefault(x => x.id == user.userPictureId).picture;
                 userProfile.base64StringPhoto = Convert.ToBase64String(arr);
-            }         
+            }
             
             return Ok(userProfile);
         }
@@ -172,17 +174,47 @@ namespace Hospital.API.Controllers
             return appoiments;
         }
 
-        //[HttpGet("isDoctor")]
-        //[Authorize]
-        //public ActionResult<bool> IsDoctor()
-        //{
-        //    if()
-        //    {
+        [HttpGet("isDoctor")]
+        [Authorize]
+        public bool isDoctor()
+        {
+            return doctorContext.isDoctorExist(Guid.Parse(User.Identity.Name)); 
+        }
 
-        //    }
+        [HttpGet("isAdminInHospital")]
+        [Authorize]
+        public bool isAdminInHospital()
+        {
+            var doctorId = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name)).id;
 
-        //    return new JsonResult(isAuthenticated);
-        //}
+            if (doctorContext.isDoctorExist(Guid.Parse(User.Identity.Name)) && workContext.isDoctorExistInWorkTable(doctorId))
+                return workContext.getAllWorks
+                    .Any(x => x.doctorId == doctorId
+                        && x.isAdminInHospital);
+
+            return false;
+        }
+
+        [HttpGet("isAdminInDepartament")]
+        [Authorize]
+        public bool isAdminInDepartament()
+        {
+            var doctorId = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name)).id;
+
+            if (doctorContext.isDoctorExist(Guid.Parse(User.Identity.Name)) && workContext.isDoctorExistInWorkTable(doctorId))
+                return workContext.getAllWorks
+                    .Any(x => x.doctorId == doctorId
+                        && x.isAdminInDepartament);
+
+            return false;
+        }
+
+        [HttpGet("isAdminInSystem")]
+        [Authorize]
+        public bool isAdminInSystem()
+        {
+            return userContext.users.Any(x => x.id == Guid.Parse(User.Identity.Name) && x.isAdmin);
+        }
 
     }
 }

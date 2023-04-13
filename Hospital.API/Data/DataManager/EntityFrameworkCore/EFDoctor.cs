@@ -1,6 +1,7 @@
 ﻿using Hospital.API.Data.DataManager.Interfaces;
 using Hospital.API.Models.Entities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Hospital.API.Data.DataManager.EntityFrameworkCore
@@ -21,6 +22,11 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
                 userId = id,
                 additionalInformation = null,
             }) ;
+        }
+
+        public IEnumerable<Doctor> getAllDoctors()
+        {
+            return dbContext.doctorTable;
         }
 
         public Doctor getDoctorById(Guid id)

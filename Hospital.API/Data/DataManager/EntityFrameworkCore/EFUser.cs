@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 {
@@ -14,6 +16,8 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         private readonly HashPassword hashPassword;
         private readonly IPatient Ipatient;
         private readonly IDoctor Idoctor;
+
+        public IEnumerable<User> users => dbContext.userTable;
 
         public EFUser(HospitalDbContext context, HashPassword hashPassword, IPatient ipatient, IDoctor iDoctor)
         {

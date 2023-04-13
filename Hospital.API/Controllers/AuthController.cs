@@ -155,35 +155,6 @@ namespace Hospital.API.Controllers
             return Ok();
         }
 
-
-        //private async Task Authenticate(string userId)
-        //{
-
-        //    Claim claim;
-        //    if (doctorContext.isDoctorExist(Guid.Parse(userId)))
-        //    {
-        //        claim = new Claim(ClaimsIdentity.DefaultRoleClaimType, "Doctor");
-        //    }
-        //    else
-        //    {
-        //        claim = new Claim(ClaimsIdentity.DefaultRoleClaimType, "Patient");
-        //    }
-
-
-        //    var claims = new List<Claim>
-        //    {
-        //        new Claim(ClaimsIdentity.DefaultNameClaimType, userId),
-        //        claim
-        //    };
-
-        //    ClaimsIdentity id = 
-        //        new ClaimsIdentity(
-        //            claims, "HospitalAuthCoockie", 
-        //            ClaimsIdentity.DefaultNameClaimType, 
-        //            ClaimsIdentity.DefaultRoleClaimType);
-
-        //    await HttpContext.SignInAsync(new ClaimsPrincipal(id));
-        //}
-
+       
     }
 }
