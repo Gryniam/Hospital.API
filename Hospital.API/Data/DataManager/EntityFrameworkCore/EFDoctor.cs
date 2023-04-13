@@ -51,14 +51,7 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 
         public bool isDoctorExist(Guid userId)
         {
-            if(dbContext.doctorTable.Any(x => x.userId == userId))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return dbContext.doctorTable.Any(x => x.userId == userId);
         }
     }
 }
