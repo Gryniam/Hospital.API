@@ -75,5 +75,7 @@ namespace Hospital.API.Data
 
         public DbSet<Time>  timeTable { get; set; }
         public DbSet<Appoiment> appoimentTable { get; set;}
+
+        public DbSet<Request> requestTable { get; set; }
     }
 }
