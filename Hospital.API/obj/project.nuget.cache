@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "w5dRv4fkRwC4PO5E1LA8XxiG6meIWsyp34CSE2XVlFUQ4MLG9PAgkYvWZo/tB5vj82bH7OhKngRKFdj9HcKKJA==",
+  "dgSpecHash": "V1MywsWBQUO1ULC46toQFlUyovDGRYLa9uk6RKygwnWYNFgDfgY9/Ayur9LwtVTsbgvseeok1hKRC7VonMnWfg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\PC\\Source\\Repos\\Hospital.API\\Hospital.API\\Hospital.API.csproj",
+  "projectFilePath": "C:\\Users\\PC\\source\\repos\\Hospital.API\\Hospital.API\\Hospital.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\PC\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\PC\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",

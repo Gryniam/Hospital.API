@@ -286,7 +286,8 @@ namespace Hospital.API.Data
                 dbContext.userPictureTable.Add(new UserPicture
                 {
                     id = pictureId,
-                    picture = File.ReadAllBytes("D:\\Study\\Doctor.png")
+                    //picture = File.ReadAllBytes("D:\\Study\\Doctor.png")
+                    picture = null
                 });
                 Id = Guid.NewGuid();
                 dbContext.userTable.Add(new User
@@ -332,7 +333,7 @@ namespace Hospital.API.Data
 
             if (!dbContext.timeTable.Any())
             {
-                for (int i = 10; i<= 18; i++)
+                for (int i = 10; i <= 18; i++)
                 {
                     dbContext.timeTable.Add(new Time
                     {
@@ -346,7 +347,7 @@ namespace Hospital.API.Data
                 dbContext.SaveChanges();
             }
 
-            if(!dbContext.doctorTable.Any())
+            if (!dbContext.doctorTable.Any())
             {
                 dbContext.doctorTable.Add(new Doctor
                 {
