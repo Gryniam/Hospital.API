@@ -3,6 +3,7 @@ using Hospital.API.Models.Entities;
 using Hospital.API.Models.ViewModels;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 {
@@ -37,10 +38,14 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             EditProfileModel model = new EditProfileModel();
             model.registrationModel = toRegistrationModel(user);
 
-            model.currentDistrictName = locationContext.getDistrictBySettlementId(
-                locationContext.getSettlementById(user.settlementId).id).name;
+            //model.currentDistrictName = locationContext.getDistrictBySettlementId(
+            //    locationContext.getSettlementById(user.settlementId).id).name;
 
-            model.currentRegionName = locationContext.getRegionBySettlementId(user.settlementId).name;
+            model.currentDistrictName = " ";
+
+            //model.currentRegionName = locationContext.getRegionBySettlementId(user.settlementId).name;
+
+            model.currentRegionName = " ";
 
             model.noAllergySubstance = dbContext.allergiesTable
                     .Where(a => a.patiendId != patientId)
@@ -65,17 +70,30 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 
         public RegistrationModel toRegistrationModel(User user)
         {
-            return new RegistrationModel {
-                surname = user.surname,
-                name = user.name,
-                middleName = user.middleName,
-                password = string.Empty,
-                mail = user.mail,
-                gender = dbContext.genderTable.Find(user.genderId).genderName,
-                birthDate = user.birthDate.ToString(),
-                phoneNumber = user.phoneNumber,
-                settlementName = dbContext.settlementTable.Find(user.settlementId).name
-            };
+            RegistrationModel regModel = new RegistrationModel();
+            regModel.surname = user.surname;
+            regModel.name = user.name;
+            regModel.middleName = user.middleName;
+                regModel.password = string.Empty;
+                regModel.mail = user.mail;
+                regModel.gender = dbContext.genderTable.Find(user.genderId).genderName;
+                regModel.birthDate = user.birthDate.ToString();
+                regModel.phoneNumber = user.phoneNumber;
+                regModel.settlementName = dbContext.settlementTable.Find(user.settlementId).name;
+
+            return regModel;
+
+            //return new RegistrationModel {
+            //    surname = user.surname,
+            //    name = user.name,
+            //    middleName = user.middleName,
+            //    password = string.Empty,
+            //    mail = user.mail,
+            //    gender = dbContext.genderTable.Find(user.genderId).genderName,
+            //    birthDate = user.birthDate.ToString(),
+            //    phoneNumber = user.phoneNumber,
+            //    settlementName = dbContext.settlementTable.Find(user.settlementId).name
+            //};
         }
 
         public UserProfileModel toUserProFileModel(User user)
