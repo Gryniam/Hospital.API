@@ -10,6 +10,8 @@ namespace Hospital.API.Models.ViewModels
         public string currentRegionName { get; set; }
         public string currentDistrictName { get; set; }
 
+        public Indexes indexes { get; set; }
+
         public List<Substance> noAllergySubstance { get; set; }
 
         public List<Substance> AllergySubstance { get; set; }

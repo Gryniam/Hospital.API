@@ -17,6 +17,7 @@ namespace Hospital.API.Controllers
         private readonly HospitalDbContext dbContext;
         private readonly IUser userContext;
         private readonly ICast castContext;
+        private readonly IIndexes indexesContext;
        
 
         public EditProfileController(HospitalDbContext dbContext, IUser user, ICast castContext)
@@ -62,6 +63,8 @@ namespace Hospital.API.Controllers
             user.Age = DateTime.Now.Year - user.birthDate.Year;
             user.phoneNumber = regModel.phoneNumber;
             user.gender = dbContext.genderTable.FirstOrDefault(x => x.genderName == regModel.name);
+
+            dbContext.userTable.Update(user);
             dbContext.SaveChanges();
 
             return Ok();
@@ -82,7 +85,25 @@ namespace Hospital.API.Controllers
             else
             {
                 user.passwordHash = hashPassword.Hash(model.NewPassword);
+                dbContext.userTable.Update(user);
                 dbContext.SaveChanges();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("/updateIndexes")]
+        [Authorize]
+        public async Task<IActionResult> updateIndexes([FromBody] Indexes indexes)
+        {
+            if(indexesContext.getIndexesOfUser(Guid.Parse(User.Identity.Name)) == default)
+            {
+                indexesContext.addIndexesToUser(Guid.Parse(User.Identity.Name));
+                indexesContext.updateIndexesOfUser(indexes, Guid.Parse(User.Identity.Name));
+            }
+            else
+            {
+                indexesContext.updateIndexesOfUser(indexes, Guid.Parse(User.Identity.Name));
             }
 
             return Ok();

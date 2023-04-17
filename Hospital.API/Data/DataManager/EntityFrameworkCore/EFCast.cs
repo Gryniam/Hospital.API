@@ -11,12 +11,14 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         private readonly HospitalDbContext dbContext;
         private readonly ILocation locationContext;
         private readonly IPatient patientContext;
+        private readonly IIndexes indexesContext;
 
-        public EFCast(HospitalDbContext dbContext, ILocation locationContext, IPatient patientContext)
+        public EFCast(HospitalDbContext dbContext, ILocation locationContext, IPatient patientContext, IUser userContext, IIndexes indexesContext)
         {
             this.dbContext = dbContext;
             this.locationContext = locationContext;
             this.patientContext = patientContext;
+            this.indexesContext = indexesContext;
         }
 
         public AppoimentModel toAppoimentModel(Appoiment appoiment)
@@ -55,6 +57,8 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             model.regions = locationContext.regions.ToList();
             model.districts = locationContext.districts.ToList();
             model.settlements = locationContext.settlements.ToList();
+
+            model.indexes = indexesContext.getIndexesByPatientId(patientContext.getPatientByUserId(user.id).id);
 
             return model;
         }
