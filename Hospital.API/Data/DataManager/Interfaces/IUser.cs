@@ -17,5 +17,6 @@ namespace Hospital.API.Data.DataManager.Interfaces
         User getUserByPatientId(Guid id);
 
         User getUserByDoctorId(Guid id);
+
     }
 }

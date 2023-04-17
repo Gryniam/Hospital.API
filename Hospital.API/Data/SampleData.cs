@@ -338,9 +338,6 @@ namespace Hospital.API.Data
                     dbContext.timeTable.Add(new Time
                     {
                         id = Guid.NewGuid(),
-                        doctorId = dbContext.doctorTable.First(
-                        x => x.userId == dbContext.userTable.First(
-                            x => x.mail == "muzikager@gmail.com").id).id,
                         time = $"{i}:00"
                     });
                 }

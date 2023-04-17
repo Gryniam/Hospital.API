@@ -7,10 +7,6 @@ namespace Hospital.API.Models.Entities
     {
         public Guid id { get; set; }
 
-        public Guid doctorId { get; set; }
-
-        [NotMapped]
-        public Doctor doctor { get; set; }
         public string time { get; set; }
     }
 }

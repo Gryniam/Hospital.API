@@ -532,15 +532,31 @@ namespace Hospital.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("doctorId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("time")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
                     b.ToTable("timeTable");
+                });
+
+            modelBuilder.Entity("Hospital.API.Models.Entities.Times", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("doctorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("timeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("timesTable");
                 });
 
             modelBuilder.Entity("Hospital.API.Models.Entities.Treatment", b =>
