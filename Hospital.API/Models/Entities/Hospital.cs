@@ -29,6 +29,9 @@ namespace Hospital.API.Models.Entities
         [NotMapped]
         public Type type { get; set; }
 
+        [NotMapped]
+        public List<Departament> departaments { get; set; }
+
         public string contactNumber { get; set; }
 
         public string description { get; set; }

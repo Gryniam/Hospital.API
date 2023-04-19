@@ -17,10 +17,5 @@ namespace Hospital.API.Models.Entities
 
         public string additionalInformation { get; set; }
         public string phoneNumber { get; set; }
-
-        internal Doctor getDoctorByUserId(Guid guid)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

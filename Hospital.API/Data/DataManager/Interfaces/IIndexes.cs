@@ -9,6 +9,8 @@ namespace Hospital.API.Data.DataManager.Interfaces
     {
         void addIndexesToUser(Guid userId);
 
+        void addIndexesToPatient(Guid patientId);
+
         IEnumerable<Indexes> indexes { get; }
 
         Indexes getIndexesOfUser(Guid userId);

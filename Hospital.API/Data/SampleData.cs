@@ -13,518 +13,524 @@ namespace Hospital.API.Data
         public static void fillBasicData(HospitalDbContext dbContext)
         {
           
-           if(!dbContext.diseaseTable.Any()) {
-                dbContext.diseaseTable.Add(new Disease
-                {
-                    id = Guid.NewGuid(),
-                    name = "Запалення легенів"
-                });
-           }
+          if(!dbContext.regionTable.Any())
+          {
+                fillLocations(dbContext);
+          }
 
-           if(!dbContext.genderTable.Any())
-           {
-                dbContext.genderTable.Add(new Gender
-                {
-                    genderName = "Чоловік"
-                });
-                dbContext.genderTable.Add(new Gender
-                {
-                    genderName = "Жінка"
-                });
-                dbContext.genderTable.Add(new Gender
-                {
-                    genderName = "Вийняток"
-                });
-                dbContext.SaveChanges();
-            }
+          if(!dbContext.userTable.Any())
+          {
+                fillUsers(dbContext);
+          }
 
-           if(!dbContext.officeTable.Any())
-           {
-                dbContext.officeTable.Add(new Office
-                {
-                    id = Guid.NewGuid(),
-                    name = "Палата стаціонарна",
-                    numberInHospital = 612
-                });
-                dbContext.officeTable.Add(new Office
-                {
-                    id = Guid.NewGuid(),
-                    name = "Палата стаціонарна",
-                    numberInHospital = 316
-                });
-                dbContext.officeTable.Add(new Office
-                {
-                    id = Guid.NewGuid(),
-                    name = "Кабінет УЗД",
-                    numberInHospital = 210
-                });
-                dbContext.SaveChanges();
-            }  
-           //Add indexes
+          if(!dbContext.substanceTable.Any() && !dbContext.allergiesTable.Any())
+          {
+                fillAllergiesAndSubstances(dbContext);
+          }
 
-           if(!dbContext.regionTable.Any())
-           {
-                dbContext.regionTable.Add(new Region
-                {
-                    id = Guid.NewGuid(),
-                    name = "Івано-Франківська"
-                });
-                dbContext.SaveChanges();
-            }
-            if (!dbContext.districtTable.Any())
+          if(!dbContext.preparationTable.Any() && !dbContext.preparationsTable.Any()) 
+          {
+                fillPreparationAndPreparations(dbContext);
+          }
+
+          if(!dbContext.symptomTable.Any() && !dbContext.symptomsTable.Any())
+          {
+                fillSymptomDiseaseAndSymptoms(dbContext);
+          }
+
+          if (!dbContext.hospitalTable.Any())
+          {
+            fillHospitalList(dbContext);
+          }
+
+          if (!dbContext.officeTable.Any())
+          {
+              fillDepartamentsAndOffices(dbContext);
+          }
+          if (!dbContext.specialityTable.Any() && !dbContext.specialitiesTable.Any())
+          {
+                fillSpecialtyAndSpecialities(dbContext);
+          }
+
+          if (!dbContext.workTable.Any())
+          {
+              fillWorkTableAndStatus(dbContext);
+          }
+
+        }
+
+        public static void fillLocations(HospitalDbContext dbContext)
+        {
+            var regions = new List<Region>
             {
-                dbContext.districtTable.Add(new District
+                new Region { id = Guid.NewGuid(), name = "Вінницька область" },
+                new Region { id = Guid.NewGuid(), name = "Волинська область" },
+                new Region { id = Guid.NewGuid(), name = "Дніпропетровська область" },
+                new Region { id = Guid.NewGuid(), name = "Донецька область" }
+            };
+
+            dbContext.regionTable.AddRange(regions);
+
+            var districts = new List<District>();
+            foreach (var region in regions)
+            {
+                for (int i = 1; i <= 3; i++)
                 {
-                    id = Guid.NewGuid(),
-                    name = "Коломийський",
-                    regionId = dbContext.regionTable.First(x=>x.name == "Івано-Франківська").id
-                    
+                    var district = new District { id = Guid.NewGuid(), name = $"Район {i} в області {region.name}", regionId = region.id };
+                    districts.Add(district);
                 }
-                );
-                dbContext.SaveChanges();
-            }
-            if (!dbContext.settlementTable.Any())
-           {
-                dbContext.settlementTable.Add(new Settlement
-                {
-                    id = Guid.NewGuid(),
-                    name = "Коломия",
-                    districtId = dbContext.districtTable.First(x=>x.name == "Коломийський").id
-                });
-                dbContext.SaveChanges();
             }
 
-           if (!dbContext.specialityTable.Any())
-           {
-                dbContext.specialityTable.Add(
-                    new Specialty
-                    {
-                        Name = "Лікар-невролог"
-                    });
-                dbContext.specialityTable.Add(
-                    new Specialty
-                    {
-                        Name = "Лікар-педіатр"
-                    });
-                dbContext.SaveChanges();
-           }
-           if (!dbContext.statusTable.Any())
-           {
-                dbContext.statusTable.Add(
-                    new Status
-                    {
-                        status = "Активний"
-                    });
-                dbContext.statusTable.Add(
-                    new Status
-                    {
-                        status = "Неактивний"
-                    });
-                dbContext.SaveChanges();
-            }
+            dbContext.districtTable.AddRange(districts);
+            dbContext.SaveChanges();
 
-            if (!dbContext.substanceTable.Any())
+
+            var allDistricts = dbContext.districtTable.ToList();
+
+            var settlements = new List<Settlement>();
+            foreach (var district in allDistricts)
             {
-                dbContext.substanceTable.Add(
-                    new Substance { 
-                        id = Guid.NewGuid(),
-                        substanceName = "Е235"
-                    }
-                    );
-                dbContext.substanceTable.Add(
-                    new Substance
-                    {
-                        id = Guid.NewGuid(),
-                        substanceName = "Лейкоза"
-                    }
-                    );
-                dbContext.SaveChanges();
+                for (int i = 1; i <= 2; i++)
+                {
+                    var settlement = new Settlement { id = Guid.NewGuid(), name = $"Нас. пункт {i} в районі {district.name}", districtId = district.id };
+                    settlements.Add(settlement);
+                }
             }
 
-            if (!dbContext.preparationTable.Any())
+        }
+
+        public static void fillUsers(HospitalDbContext dbContext)
+        {
+            HashPassword hash = new HashPassword();
+            var settlements = dbContext.settlementTable.ToList();
+            if (!dbContext.genderTable.Any())
             {
-                dbContext.preparationTable.Add(new Preparation
+                var genders = new List<Gender>
+                {
+                    new Gender { id = 1, genderName = "Чоловік" },
+                     new Gender { id = 2, genderName = "Жінка" }
+                };
+
+                dbContext.genderTable.AddRange(genders);
+            }
+
+            var random = new Random();
+            for (int i = 1; i <= 5; i++)
+            {
+                bool b = true;
+                if(i > 5)
+                {
+                    b = false;
+                }
+                var user = new User
                 {
                     id = Guid.NewGuid(),
-                    name = "Азитроміцин"
-                });
-                dbContext.preparationTable.Add(new Preparation
+                    surname = "Прізвище " + i,
+                    name = "Ім'я " + i,
+                    middleName = "По-батькові " + i,
+                    passwordHash = hash.Hash("password"), //password
+                    mail = "mail" + i + "@example.com",
+                    genderId = i % 2 == 0 ? 2 : 1, 
+                    birthDate = DateTime.Now.AddYears(-20 - i),
+                    Age = 20 + i,
+                    isAdmin = i == 1,
+                    phoneNumber = "+38095123456" + i,
+                    userPictureId = Guid.NewGuid(),
+                    settlementId = settlements[random.Next(settlements.Count)].id
+                };
+
+                dbContext.userTable.Add(user);
+
+                var userPicture = new UserPicture
+                {
+                    id = user.userPictureId,
+                    picture = null,
+                    base64StringPhoto = null
+                };
+
+                dbContext.userPictureTable.Add(userPicture);
+
+                var patient = new Patient
                 {
                     id = Guid.NewGuid(),
-                    name = "Азитроміцин-лейкоцин"
+                    UserId = user.id,
+                };
+                dbContext.patientTable.Add(patient);
+                Indexes indexes = new Indexes
+                {
+                    id = Guid.NewGuid(),
+                    patiendId = patient.id
+                };
+                dbContext.indexesTable.Add(indexes);
+
+                if (b)
+                {
+                    var doctor = new Doctor
+                    {
+                        id = Guid.NewGuid(),
+                        userId = user.id,
+                    };
+                    dbContext.doctorTable.Add(doctor);
+                }
+
+            }
+            dbContext.SaveChanges();
+        }
+
+        public static void fillAllergiesAndSubstances(HospitalDbContext context)
+        {
+            var patient = context.patientTable.First();
+
+            for (int i = 0; i < 20; i++)
+            {
+                Substance sub = new Substance
+                {
+                    id = Guid.NewGuid(),
+                    substanceName = $"Речовина {i + 1}"
+                };
+                context.substanceTable.Add(sub);
+                if(i<3)
+                {
+                    var allergy = new Allergy
+                    {
+                        patiendId = patient.id,
+                        substanceId = sub.id
+                    };
+                    context.allergiesTable.Add(allergy);
+                }
+            }
+           
+            context.SaveChanges();
+        }
+
+        public static void fillPreparationAndPreparations(HospitalDbContext context)
+        {
+            var substances = context.substanceTable.ToList();
+            for (int i = 0; i < 5; i++)
+            {
+                var preparation = new Preparation
+                {
+                    id= Guid.NewGuid(),
+                    name = $"Preparation {i + 1}",
+                    substances = new List<Substance>
+                    {
+                          substances[i * 2],
+                          substances[i * 2 + 1]
+                    }
+                };
+
+                context.preparationTable.Add(preparation);
+
+                context.preparationsTable.Add(new Preparations
+                {
+                    id = Guid.NewGuid(),
+                    preparationId = preparation.id,
+                    substanceId = preparation.substances[0].id
                 });
+
+                context.preparationsTable.Add(new Preparations
+                {
+                    id  = Guid.NewGuid(),
+                    preparationId = preparation.id,
+                    substanceId = preparation.substances[1].id
+                });
+            }
+
+            context.SaveChanges();
+        }
+
+        public static void fillSymptomDiseaseAndSymptoms(HospitalDbContext context)
+        {
+            for (int i = 1; i <= 20; i++)
+            {
+                context.symptomTable.Add(new Symptom { id = Guid.NewGuid(), name = $"Symptom{i}" });
+            }
+            var random = new Random();
+
+            for (int i = 1; i <= 5; i++)
+            {
+                var disease = new Disease { id = Guid.NewGuid(), name = $"Disease{i}" };
+                List<Symptom> symptoms = context.symptomTable.OrderBy(s => Guid.NewGuid()).Take(3).ToList();
+                for (int j = 0; j < 3; j++)
+                {
+                    // зберігаємо запис про зв'язок між хворобою та симптомом
+                    context.symptomsTable.Add(new Symptoms { id = Guid.NewGuid(), diseaseId = disease.id, symptomId = symptoms[i].id });
+                }
+                context.diseaseTable.Add(disease);
+            }
+            context.SaveChanges();
+        }
+
+        public static void fillHospitalList(HospitalDbContext context)
+        {
+            List<Models.Entities.Type> types = new List<Models.Entities.Type>();
+            string[] typeNames = { "Type1", "Type2", "Type3", "Type4", "Type5" };
+            for (int i = 0; i < typeNames.Length; i++)
+            {
+                Models.Entities.Type type = new Models.Entities.Type
+                {
+                    id = i + 1,
+                    name = typeNames[i]
+                };
+                types.Add(type);
+            }
+            context.typeTable.AddRange(types);
+            context.SaveChanges();
+
+            Random random = new Random();
+            List<Models.Entities.Hospital> hospitals = new List<Models.Entities.Hospital>();
+            List<Guid> settlementIds = context.settlementTable.Select(s => s.id).ToList();
+            for (int i = 0; i < 3; i++)
+            {
+                int randomTypeId = random.Next(1, 6);
+                Guid randomSettlementId = settlementIds[random.Next(settlementIds.Count)];
+                Settlement settlement = context.settlementTable.FirstOrDefault(s => s.id == randomSettlementId);
+                if (settlement != null)
+                {
+                    Guid districtId = settlement.districtId;
+                    District district = context.districtTable.FirstOrDefault(d => d.id == districtId);
+                    if (district != null)
+                    {
+                        Guid regionId = district.regionId;
+                        Region region = context.regionTable.FirstOrDefault(r => r.id == regionId);
+                        if (region != null)
+                        {
+                            Models.Entities.Hospital hospital = new Models.Entities.Hospital
+                            {
+                                name = "Hospital " + i,
+                                regionId = regionId,
+                                districtId = districtId,
+                                settlementId = randomSettlementId,
+                                typeId = randomTypeId,
+                                contactNumber = "+380981097188",
+                                description = "Description",
+                                adressDescription = "Hospital"
+                            };
+                            hospitals.Add(hospital);
+                        }
+                    }
+                }
+            }
+            context.hospitalTable.AddRange(hospitals);
+            context.SaveChanges();
+        }
+
+        public static void fillDepartamentsAndOffices(HospitalDbContext dbContext)
+        {
+            List<Models.Entities.Hospital> hospitals = dbContext.hospitalTable.ToList();
+
+            foreach (Models.Entities.Hospital hospital in hospitals)
+            {
+                // Створюємо два департаменти для кожної лікарні
+                Departament department1 = new Departament
+                {
+                    hospitalId = hospital.id,
+                    name = "Department 1",
+                    additionalInformation = "Additional information 1"
+                };
+
+                Departament department2 = new Departament
+                {
+                    hospitalId = hospital.id,
+                    name = "Department 2",
+                    additionalInformation = "Additional information 2"
+                };
+
+                // Додаємо департаменти до бази даних і зберігаємо зміни
+                dbContext.departamentTable.Add(department1);
+                dbContext.departamentTable.Add(department2);
                 dbContext.SaveChanges();
+
+
+                List<Departament> departments = dbContext.departamentTable.ToList();
+
+                // Для кожного департаменту створити по 2 офіси та додати їх до списку офісів департаменту
+                foreach (Departament department in departments)
+                {
+                    List<Office> offices = new List<Office>();
+
+                    for (int i = 1; i <= 2; i++)
+                    {
+                        Office office = new Office
+                        {
+                            id = Guid.NewGuid(),
+                            name = $"Офіс {i} департаменту {department.name}",
+                            numberInHospital = i,
+                            additionalInformation = $"Офіс  {i} в департаменті {department.name}"
+                        };
+
+                        offices.Add(office);
+                        dbContext.officeTable.Add(office);
+                    }
+
+                    // Зберегти зміни в базі даних, щоб отримати id офісів
+                    dbContext.SaveChanges();
+
+                    // Для кожного офісу додати зв'язок з департаментом та зберегти зміни в базі даних
+                    foreach (Office office in offices)
+                    {
+                        Offices departmentOffice = new Offices
+                        {
+                            id = Guid.NewGuid(),
+                            officeId = office.id,
+                            departamentId = department.id
+                        };
+
+                        department.officesList.Add(departmentOffice);
+                        dbContext.officesTable.Add(departmentOffice);
+                    }
+
+                    // Зберегти зміни в базі даних
+                    dbContext.SaveChanges();
+                }
+            }
+        }
+
+        public static void fillSpecialtyAndSpecialities(HospitalDbContext context)
+        {
+            Random rnd = new Random();
+            List<string> specialityNames = new List<string> { "Cardiologist", "Dermatologist", 
+                "Endocrinologist", "Gastroenterologist", "Hematologist", "Neurologist", 
+                "Oncologist", "Ophthalmologist", "Pediatrician", "Psychiatrist", 
+                "Rheumatologist", "Urologist", "Allergist", "Anesthesiologist", "Chiropractor", 
+                "ENT Specialist", "Gynecologist", "Internist", "Orthopedist", "Physical therapist" };
+
+            List<Specialty> specialties = new List<Specialty>();
+            for (int i = 0; i < 20; i++)
+            {
+                string randomName = specialityNames[rnd.Next(specialityNames.Count)];
+                specialties.Add(new Specialty {id = Guid.NewGuid(), Name = randomName });
+            }
+
+            context.specialityTable.AddRange(specialties);
+            context.SaveChanges();
+
+
+
+            List<Doctor> doctors  = context.doctorTable.ToList();
+            List<Specialities> specialities = new List<Specialities>();
+
+            foreach (var doctor in doctors)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    var randomSpecialty = specialties[rnd.Next(specialties.Count)];
+                    specialities.Add(new Specialities {Id = Guid.NewGuid() ,doctorId = doctor.id, specialityId = randomSpecialty.id });
+                }
+            }
+
+            context.specialitiesTable.AddRange(specialities);
+            context.SaveChanges();
+        }
+
+        public static void fillWorkTableAndStatus(HospitalDbContext context)
+        {
+            var activeStatus = new Status { status = "Активний" };
+            var inactiveStatus = new Status { status = "Неактивний" };
+            context.statusTable.Add(activeStatus);
+            context.statusTable.Add(inactiveStatus);
+            context.SaveChanges();
+
+            // get all doctors from doctorTable
+            var doctors = context.doctorTable.ToList();
+
+            // get all hospitals from hospitalTable
+            var hospitals = context.hospitalTable.ToList();
+
+            var random = new Random();
+
+            foreach (var doctor in doctors)
+            {
+                
+                var hospital = hospitals[random.Next(hospitals.Count)];
+
+                hospital.departaments = context.departamentTable.Where(x=>x.hospitalId == hospital.id).ToList();
+
+                var status = context.statusTable.ToList()[random.Next(2)];
+                var department = hospital.departaments[random.Next(hospital.departaments.Count)];
+
+                var work = new Work
+                {
+                    id = Guid.NewGuid(),
+                    doctorId = doctor.id,
+                    hospitalId = hospital.id,
+                    statusId = status.id,
+                    departamentId = department.id
+                };
+
+                if (doctors.IndexOf(doctor) < 3)
+                {
+                    work.isAdminInHospital = true;
+                    work.isAdminInDepartament = true;
+                }
+
+                context.workTable.Add(work);
+            }
+
+        }
+
+        public static void fillCaseTable(HospitalDbContext context)
+        {
+            var random = new Random();
+            var caseStatuses = new List<CaseStatus>
+            {
+                 new CaseStatus {statusName = "Активний"},
+                 new CaseStatus {statusName = "Неактивний"},
+            };
+            context.casesStatusTable.AddRange(caseStatuses);
+            context.SaveChanges();
+
+            List<Case> cases = new List<Case>();
+            for(int i = 0; i < 2; i++)
+            {
+                var randomPatient = context.patientTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+                // отримуємо рандомного лікаря із таблиці Doctor
+                var randomDoctor = context.doctorTable.Where(x => x.userId != randomPatient.UserId).OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+                // отримуємо рандомну хворобу із таблиці Disease
+                var randomDisease = context.diseaseTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+                // отримуємо рандомний статус із таблиці CaseStatus
+                var randomCaseStatus = context.casesStatusTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+                // отримуємо рандомний офіс із таблиці Office
+                var randomOffice = context.officeTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+
+                var caseS = new Case
+                {
+                    id = Guid.NewGuid(),
+                    patientId = randomPatient.id,
+                    doctorId = randomDoctor.id,
+                    diseaseId = randomDisease.id,
+                    caseStatusId = randomCaseStatus.id,
+                    officeId = randomOffice.id,
+                    anamnesis = "test1",
+                    createDate = DateTime.Now
+                };
+
+                cases.Add(caseS);
             }
             
-            if (!dbContext.preparationsTable.Any())
+
+           
+            
+            context.caseTable.AddRange(cases);
+            context.SaveChanges();
+
+            var preparations = context.preparationTable.ToList();
+            //var mYcases = context.caseTable.ToList();
+
+            List<Treatment> treatments = new List<Treatment>();
+            foreach (var caseItem in cases)
             {
-                dbContext.preparationsTable.Add(new Preparations
-                {
-                    id = Guid.NewGuid(),
-                    preparationId = dbContext.preparationTable.First(x=>x.name == "Азитроміцин").id,
-                    substanceId = dbContext.substanceTable.First(x=>x.substanceName == "Е235").id  
-                }) ;
-                dbContext.preparationsTable.Add(new Preparations
-                {
-                    id = Guid.NewGuid(),
-                    preparationId = dbContext.preparationTable.First(x => x.name == "Азитроміцин-лейкоцин").id,
-                    substanceId = dbContext.substanceTable.First(x => x.substanceName == "Е235").id
-                });
-                dbContext.preparationsTable.Add(new Preparations
-                {
-                    id = Guid.NewGuid(),
-                    preparationId = dbContext.preparationTable.First(x => x.name == "Азитроміцин-лейкоцин").id,
-                    substanceId = dbContext.substanceTable.First(x => x.substanceName == "Лейкоза").id
-                });
-                dbContext.SaveChanges();
+                // Get two random preparations
+                var preparation1 = preparations[random.Next(preparations.Count)];
+                var preparation2 = preparations[random.Next(preparations.Count)];
+
+                // Create treatments for each preparation
+                treatments.Add(new Treatment { preparation = preparation1 });
+                treatments.Add(new Treatment { preparation = preparation2 });
             }
 
-            if (!dbContext.symptomTable.Any())
-            {
-                dbContext.symptomTable.Add(
-                    new Symptom {
-                        id = Guid.NewGuid(),
-                        name = "Кашель"
-                    });
-                dbContext.symptomTable.Add(
-                   new Symptom
-                   {
-                       id = Guid.NewGuid(),
-                       name = "Висока температура"
-                   });
-                dbContext.SaveChanges();
-            }
-            if (!dbContext.typeTable.Any())
-            {
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Госпіталь для інвалідів війни"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Районна лікарня"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Обласна лікарня"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Дитяча басейнова лікарня на водному транспорті"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Дитяча лікарня"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Дитяче територіальне медичне об’єднання"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Дільнична лікарня"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Лікарня"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Лікарня на водному транспорті"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Лікувально-діагностичний центр"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Медичний центр"
-                });
-                dbContext.typeTable.Add(new Models.Entities.Type
-                {
-                    name = "Інфекційна лікарня"
-                });
-                dbContext.SaveChanges();
-            }
-            if (!dbContext.statusTable.Any())
-            {
-                dbContext.statusTable.Add(new Status
-                {
-                    status = "Працює"
-                }) ;
-                dbContext.statusTable.Add(new Status
-                {
-                    status = "Не працює"
-                });
-                dbContext.SaveChanges();
-            }
-            if (!dbContext.userTable.Any())
-            {
-                HashPassword p = new HashPassword();
-                Guid pictureId = Guid.NewGuid();
-                Guid Id = Guid.NewGuid();
-                dbContext.userTable.Add(new User
-                {
-                    id = Id,
-                    surname = "Гриньків",
-                    name = "Владислав",
-                    middleName = "Іванович",
-                    passwordHash = p.Hash("passwordOne"),
-                    Age = 21,
-                    birthDate = new DateTime(2002, 05, 22),
-                    mail = "muzikaeng@gmail.com",
-                    genderId = dbContext.genderTable.First(x=>x.genderName == "Чоловік").id,
-                    isAdmin = true,
-                    userPictureId = pictureId,
-                    phoneNumber = "+380981086166"
-                });
-                dbContext.patientTable.Add(new Patient
-                {
-                    id = Guid.NewGuid(),
-                    UserId = Id
-                }) ;
-                dbContext.userPictureTable.Add(new UserPicture
-                {
-                    id = pictureId,
-                    //picture = File.ReadAllBytes("D:\\Study\\Doctor.png")
-                    picture = null
-                });
-                Id = Guid.NewGuid();
-                dbContext.userTable.Add(new User
-                {
-                    id = Id,
-                    surname = "Гриньків",
-                    name = "Олег",
-                    middleName = "Іванович",
-                    Age = 18,
-                    birthDate = new DateTime(2002, 05, 22),
-                    passwordHash = p.Hash("passwordTwo"),
-                    mail = "muzikager@gmail.com",
-                    genderId = dbContext.genderTable.First(x => x.genderName == "Чоловік").id,
-                    isAdmin = true,
-                    phoneNumber = "+380981086166"
-                }) ;
-                dbContext.patientTable.Add(new Patient
-                {
-                    id = Guid.NewGuid(),
-                    UserId = Id
-                });
-                dbContext.SaveChanges();
-            }
-
-            if(!dbContext.symptomsTable.Any())
-            {
-                dbContext.symptomsTable.Add(new Symptoms
-                {
-                    id = Guid.NewGuid(),
-                    diseaseId = dbContext.diseaseTable.First(x => x.name == "Запалення легенів").id,
-                    symptomId = dbContext.symptomTable.First(x=>x.name == "Кашель").id
-                    
-                }) ;
-                dbContext.symptomsTable.Add(new Symptoms
-                {
-                    id = Guid.NewGuid(),
-                    diseaseId = dbContext.diseaseTable.First(x => x.name == "Запалення легенів").id,
-                    symptomId = dbContext.symptomTable.First(x => x.name == "Висока температура").id
-
-                });
-                dbContext.SaveChanges();
-            }
-
-            if (!dbContext.timeTable.Any())
-            {
-                for (int i = 10; i <= 18; i++)
-                {
-                    dbContext.timeTable.Add(new Time
-                    {
-                        id = Guid.NewGuid(),
-                        time = $"{i}:00"
-                    });
-                }
-                dbContext.SaveChanges();
-            }
-
-            if (!dbContext.doctorTable.Any())
-            {
-                dbContext.doctorTable.Add(new Doctor
-                {
-                    id = Guid.NewGuid(),
-                    userId = dbContext.userTable.First(x => x.mail == "muzikager@gmail.com").id,
-                    additionalInformation = "Test Doctor",
-                    phoneNumber = "+380981086166"
-                    
-                }) ;
-                dbContext.doctorTable.Add(new Doctor
-                {
-                    id = Guid.NewGuid(),
-                    userId = dbContext.userTable.First(x => x.mail == "muzikaeng@gmail.com").id,
-                    additionalInformation = "Test Doctor2",
-                    phoneNumber = "+380981086167"
-
-                });
-
-
-                dbContext.SaveChanges();
-            }
-
-            if (!dbContext.specialitiesTable.Any())
-            {
-                Guid userIdForDoctor = dbContext.userTable.First(x => x.mail == "muzikager@gmail.com").id;
-                dbContext.specialitiesTable.Add(new Specialities
-                {
-                    doctorId = dbContext.doctorTable.First(x => x.userId == userIdForDoctor).id,
-                    specialityId = dbContext.specialityTable.First(x => x.Name == "Лікар-невролог").id
-                });
-                dbContext.SaveChanges();
-            }
-
-            if (!dbContext.hospitalTable.Any())
-            {
-                dbContext.hospitalTable.Add(new Models.Entities.Hospital
-                {
-                    id = Guid.NewGuid(),
-                    name = "Коломийська районна лікарня",
-                    regionId = dbContext.regionTable.First(x => x.name == "Івано-Франківська").id,
-                    districtId = dbContext.districtTable.First(x=>x.name == "Коломийський").id,
-                    settlementId = dbContext.settlementTable.First(x=>x.name == "Коломия").id,
-                    typeId = dbContext.typeTable.First(x=>x.name == "Районна лікарня").id,
-                    contactNumber = "+380662748934",
-                    description = "Test Hospital"
-                }) ;
-                dbContext.SaveChanges();
-            }
-
-            if (!dbContext.workTable.Any())
-            {
-                dbContext.workTable.Add(new Work
-                {
-                    id = Guid.NewGuid(),
-                    doctorId = dbContext.doctorTable.First(
-                        x => x.userId == dbContext.userTable.First(
-                            x => x.mail == "muzikager@gmail.com").id).id,
-                    hospitalId = dbContext.hospitalTable.First(x => x.name == "Коломийська районна лікарня").id,
-                    statusId = dbContext.statusTable.First(x => x.status == "Активний").id,
-                    isAdminInHospital = true,
-                    isAdminInDepartament = true,
-                    departamentId = dbContext.departamentTable.First(x => x.name == "Відділення неврології").id
-
-                });
-            }
-
-            if (!dbContext.departamentTable.Any())
-            {
-                dbContext.departamentTable.Add(new Departament
-                {
-                    id = Guid.NewGuid(),
-                    hospitalId = dbContext.hospitalTable.First(
-                        x=>x.name == "Коломийська районна лікарня").id,
-                    name = "Відділення неврології",
-                    additionalInformation = "Test departament"
-
-                });
-                dbContext.departamentTable.Add(new Departament
-                {
-                    id = Guid.NewGuid(),
-                    hospitalId = dbContext.hospitalTable.First(
-                        x => x.name == "Коломийська районна лікарня").id,
-                    name = "Відділення діагностики",
-                    additionalInformation = "Test departament"
-
-                });
-                dbContext.SaveChanges();
-            }
-
-            if (!dbContext.officesTable.Any())
-            {
-                dbContext.officesTable.Add(new Offices
-                {
-                    id = Guid.NewGuid(),
-                    departamentId = dbContext.departamentTable.First(
-                        x=>x.name == "Відділення неврології").id,
-                    officeId = dbContext.officeTable.First(x=>x.numberInHospital == 612).id,
-                });
-                dbContext.officesTable.Add(new Offices
-                {
-                    id = Guid.NewGuid(),
-                    departamentId = dbContext.departamentTable.First(
-                        x => x.name == "Відділення неврології").id,
-                    officeId = dbContext.officeTable.First(x => x.numberInHospital == 316).id,
-                });
-                dbContext.officesTable.Add(new Offices
-                {
-                    id = Guid.NewGuid(),
-                    departamentId = dbContext.departamentTable.First(
-                        x => x.name == "Відділення діагностики").id,
-                    officeId = dbContext.officeTable.First(x => x.numberInHospital == 210).id,
-                });
-                dbContext.SaveChanges();
-            }
-            if (!dbContext.casesStatusTable.Any())
-            {
-                dbContext.casesStatusTable.Add(new CaseStatus
-                {
-                    id = Guid.NewGuid(),
-                    statusName = "Пацієнт вилікувався"
-                });
-                dbContext.casesStatusTable.Add(new CaseStatus
-                {
-                    id = Guid.NewGuid(),
-                    statusName = "У процесі"
-                });
-                dbContext.casesStatusTable.Add(new CaseStatus
-                {
-                    id = Guid.NewGuid(),
-                    statusName = "Пацієнт помер"
-                });
-                dbContext.casesStatusTable.Add(new CaseStatus
-                {
-                    id = Guid.NewGuid(),
-                    statusName = "Заплановано повторне лікування"
-                });
-                dbContext.casesStatusTable.Add(new CaseStatus
-                {
-                    id = Guid.NewGuid(),
-                    statusName = "Пацієнт відправлений на діагностику"
-                });
-                dbContext.SaveChanges();
-            }
-
-            if (!dbContext.caseTable.Any())
-            {
-                dbContext.caseTable.Add(new Case
-                {
-                    id = Guid.NewGuid(),
-                    patientId = dbContext.patientTable.First(
-                        x => x.UserId == dbContext.userTable.First(
-                            x => x.mail == "muzikaeng@gmail.com").id).id,
-                    doctorId = dbContext.doctorTable.First(
-                        x => x.userId == dbContext.userTable.First(
-                            x => x.mail == "muzikager@gmail.com").id).id,
-                    diseaseId = dbContext.diseaseTable.First(
-                        x => x.name == "Запалення легенів").id,
-                    caseStatusId = dbContext.casesStatusTable.First(
-                        x => x.statusName == "У процесі").id,
-                    officeId = dbContext.officeTable.First(
-                        x=>x.numberInHospital == 612).id,
-                    anamnesis = "Test anamnesis",
-                    treatmentInformation = "Will be soon",
-                    createDate = DateTime.Now
-                });
-                dbContext.SaveChanges();
-            }
-            if(!dbContext.allergiesTable.Any())
-            {
-                dbContext.allergiesTable.Add(new Allergy
-                {
-                    id = Guid.NewGuid(),
-                    patiendId = dbContext.patientTable.First(
-                        x => x.UserId == dbContext.userTable.First(
-                            x => x.mail == "muzikaeng@gmail.com").id).id,
-                    substanceId = dbContext.substanceTable.First(x => x.substanceName == "Е235").id
-                });
-            }
-
-            dbContext.SaveChanges();
+            context.treatmentTable.AddRange(treatments);
+            context.SaveChanges();
         }
     }
 }

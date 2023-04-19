@@ -9,7 +9,7 @@ namespace Hospital.API.Models.Entities
     public class Specialty
     {
         [Key]
-        public int id { get; set; }
+        public Guid id { get; set; }
 
         public string Name { get; set; }
     }

@@ -9,10 +9,10 @@ namespace Hospital.API.Models.Entities
     public class Specialities
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public Guid doctorId { get; set; }
 
-        public int specialityId { get; set; }
+        public Guid specialityId { get; set; }
     }
 }

@@ -25,6 +25,17 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         }
         public IEnumerable<Indexes> indexes => dbContext.indexesTable;
 
+        public void addIndexesToPatient(Guid patientId)
+        {
+            Indexes indexes = new Indexes
+            {
+                id = Guid.NewGuid(),
+                patiendId = patientId
+            };
+            dbContext.indexesTable.Add(indexes);
+            dbContext.SaveChanges();
+        }
+
         public void addIndexesToUser(Guid userId)
         {
             var patientId = patientContext.getPatientByUserId(userId).id;
