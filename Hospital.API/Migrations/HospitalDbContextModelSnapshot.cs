@@ -432,17 +432,15 @@ namespace Hospital.API.Migrations
 
             modelBuilder.Entity("Hospital.API.Models.Entities.Specialities", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("doctorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("specialityId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("specialityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -451,11 +449,9 @@ namespace Hospital.API.Migrations
 
             modelBuilder.Entity("Hospital.API.Models.Entities.Specialty", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");

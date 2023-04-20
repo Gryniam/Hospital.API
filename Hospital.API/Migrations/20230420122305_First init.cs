@@ -268,6 +268,20 @@ namespace Hospital.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "requestTable",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    specialityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Document = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_requestTable", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "settlementTable",
                 columns: table => new
                 {
@@ -284,10 +298,9 @@ namespace Hospital.API.Migrations
                 name: "specialitiesTable",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     doctorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    specialityId = table.Column<int>(type: "int", nullable: false)
+                    specialityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -298,8 +311,7 @@ namespace Hospital.API.Migrations
                 name: "specialityTable",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -355,6 +367,20 @@ namespace Hospital.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_symptomTable", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "timesTable",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    doctorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    timeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_timesTable", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -506,6 +532,9 @@ namespace Hospital.API.Migrations
                 name: "regionTable");
 
             migrationBuilder.DropTable(
+                name: "requestTable");
+
+            migrationBuilder.DropTable(
                 name: "settlementTable");
 
             migrationBuilder.DropTable(
@@ -525,6 +554,9 @@ namespace Hospital.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "symptomTable");
+
+            migrationBuilder.DropTable(
+                name: "timesTable");
 
             migrationBuilder.DropTable(
                 name: "timeTable");

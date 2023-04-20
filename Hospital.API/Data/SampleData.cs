@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hospital.API.Models.Entities;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace Hospital.API.Data
 {
@@ -16,6 +17,10 @@ namespace Hospital.API.Data
           if(!dbContext.regionTable.Any())
           {
                 fillLocations(dbContext);
+          }
+          if (!dbContext.settlementTable.Any())
+          {
+                fillSettlements(dbContext);
           }
 
           if(!dbContext.userTable.Any())
@@ -85,12 +90,18 @@ namespace Hospital.API.Data
             dbContext.SaveChanges();
 
 
+           
+
+        }
+
+        public static void fillSettlements(HospitalDbContext dbContext)
+        {
             var allDistricts = dbContext.districtTable.ToList();
 
             var settlements = new List<Settlement>();
             foreach (var district in allDistricts)
             {
-                for (int i = 1; i <= 2; i++)
+                for (int i = 0; i < 2; i++)
                 {
                     var settlement = new Settlement { id = Guid.NewGuid(), name = $"Нас. пункт {i} в районі {district.name}", districtId = district.id };
                     settlements.Add(settlement);
@@ -98,7 +109,7 @@ namespace Hospital.API.Data
             }
 
             dbContext.settlementTable.AddRange(settlements);
-
+            dbContext.SaveChanges();
         }
 
         public static void fillUsers(HospitalDbContext dbContext)
@@ -109,11 +120,12 @@ namespace Hospital.API.Data
             {
                 var genders = new List<Gender>
                 {
-                    new Gender { id = 1, genderName = "Чоловік" },
-                     new Gender { id = 2, genderName = "Жінка" }
+                    new Gender {  genderName = "Чоловік" },
+                     new Gender { genderName = "Жінка" }
                 };
 
                 dbContext.genderTable.AddRange(genders);
+                dbContext.SaveChanges();
             }
 
             var random = new Random();
@@ -247,13 +259,14 @@ namespace Hospital.API.Data
             {
                 context.symptomTable.Add(new Symptom { id = Guid.NewGuid(), name = $"Symptom{i}" });
             }
+            context.SaveChanges();
             var random = new Random();
 
             for (int i = 1; i <= 5; i++)
             {
                 var disease = new Disease { id = Guid.NewGuid(), name = $"Disease{i}" };
                 List<Symptom> symptoms = context.symptomTable.OrderBy(s => Guid.NewGuid()).Take(3).ToList();
-                for (int j = 0; j < 3; j++)
+                for (int j = 1; j <= 3; j++)
                 {
                     // зберігаємо запис про зв'язок між хворобою та симптомом
                     context.symptomsTable.Add(new Symptoms { id = Guid.NewGuid(), diseaseId = disease.id, symptomId = symptoms[i].id });
@@ -271,7 +284,6 @@ namespace Hospital.API.Data
             {
                 Models.Entities.Type type = new Models.Entities.Type
                 {
-                    id = i + 1,
                     name = typeNames[i]
                 };
                 types.Add(type);
@@ -378,7 +390,7 @@ namespace Hospital.API.Data
                             departamentId = department.id
                         };
 
-                        department.officesList.Add(departmentOffice);
+                        //department.officesList.Add(departmentOffice);
                         dbContext.officesTable.Add(departmentOffice);
                     }
 
@@ -425,6 +437,8 @@ namespace Hospital.API.Data
             context.SaveChanges();
         }
 
+
+        //Тут не заповнює
         public static void fillWorkTableAndStatus(HospitalDbContext context)
         {
             var activeStatus = new Status { status = "Активний" };
@@ -446,7 +460,7 @@ namespace Hospital.API.Data
                 
                 var hospital = hospitals[random.Next(hospitals.Count)];
 
-                hospital.departaments = context.departamentTable.Where(x=>x.hospitalId == hospital.id).ToList();
+                hospital.departaments = context.departamentTable.ToList();
 
                 var status = context.statusTable.ToList()[random.Next(2)];
                 var department = hospital.departaments[random.Next(hospital.departaments.Count)];
@@ -468,6 +482,7 @@ namespace Hospital.API.Data
 
                 context.workTable.Add(work);
             }
+            context.SaveChanges();
 
         }
 

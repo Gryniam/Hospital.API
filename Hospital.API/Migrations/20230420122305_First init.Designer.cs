@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hospital.API.Migrations
 {
     [DbContext(typeof(HospitalDbContext))]
-    [Migration("20230415130206_RequestsTableAdded")]
-    partial class RequestsTableAdded
+    [Migration("20230420122305_First init")]
+    partial class Firstinit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -435,17 +435,15 @@ namespace Hospital.API.Migrations
 
             modelBuilder.Entity("Hospital.API.Models.Entities.Specialities", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("doctorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("specialityId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("specialityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -454,11 +452,9 @@ namespace Hospital.API.Migrations
 
             modelBuilder.Entity("Hospital.API.Models.Entities.Specialty", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -535,15 +531,31 @@ namespace Hospital.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("doctorId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("time")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
                     b.ToTable("timeTable");
+                });
+
+            modelBuilder.Entity("Hospital.API.Models.Entities.Times", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("doctorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("timeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("timesTable");
                 });
 
             modelBuilder.Entity("Hospital.API.Models.Entities.Treatment", b =>
