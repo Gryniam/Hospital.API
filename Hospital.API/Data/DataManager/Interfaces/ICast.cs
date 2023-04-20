@@ -6,6 +6,7 @@ namespace Hospital.API.Data.DataManager.Interfaces
 {
     public interface ICast
     {
+        Indexes fromIndexesModel(IndexesModel indexesModel);
         RegistrationModel toRegistrationModel(User user);
         
         UserProfileModel toUserProFileModel(User user);

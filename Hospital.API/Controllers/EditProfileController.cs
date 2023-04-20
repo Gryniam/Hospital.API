@@ -53,7 +53,7 @@ namespace Hospital.API.Controllers
             user.surname = regModel.surname;
             user.middleName = regModel.middleName;
 
-            if (dbContext.userTable.Any(x => x.mail == regModel.mail))
+            if (dbContext.userTable.Any(x => x.mail == regModel.mail) && user.mail != regModel.mail)
             {
                 return NotFound("Користувач з такою поштою уже існує");
             }
@@ -94,16 +94,26 @@ namespace Hospital.API.Controllers
 
         [HttpPost("/updateIndexes")]
         [Authorize]
-        public async Task<IActionResult> updateIndexes([FromBody] Indexes indexes)
+        public async Task<IActionResult> updateIndexes([FromBody] IndexesModel indexesModel)
         {
-            if(indexesContext.getIndexesOfUser(Guid.Parse(User.Identity.Name)) == default)
+            var indexesOfUser = indexesContext.getIndexesOfUser(Guid.Parse(User.Identity.Name));
+            if (indexesOfUser == default)
             {
                 indexesContext.addIndexesToUser(Guid.Parse(User.Identity.Name));
-                indexesContext.updateIndexesOfUser(indexes, Guid.Parse(User.Identity.Name));
+
+                var currentIndexes = indexesContext.getIndexesOfUser(Guid.Parse(User.Identity.Name));
+                Indexes indexesToChange = castContext.fromIndexesModel(indexesModel);
+                indexesToChange.id = currentIndexes.id;
+                indexesToChange.patiendId = currentIndexes.patiendId;
+
+                indexesContext.updateIndexesOfUser(indexesToChange, Guid.Parse(User.Identity.Name));
             }
             else
             {
-                indexesContext.updateIndexesOfUser(indexes, Guid.Parse(User.Identity.Name));
+                Indexes indexesToChange = castContext.fromIndexesModel(indexesModel);
+                indexesToChange.id = indexesOfUser.id;
+                indexesToChange.patiendId = indexesOfUser.patiendId;
+                indexesContext.updateIndexesOfUser(indexesToChange, Guid.Parse(User.Identity.Name));
             }
 
             return Ok();

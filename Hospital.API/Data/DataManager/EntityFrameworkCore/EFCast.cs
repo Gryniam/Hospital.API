@@ -22,6 +22,21 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             this.indexesContext = indexesContext;
         }
 
+        public Indexes fromIndexesModel(IndexesModel indexesModel)
+        {
+            Indexes indexes = new Indexes();
+
+            indexes.height = float.Parse(indexesModel.height);
+            indexes.weight = float.Parse(indexesModel.weight);
+            indexes.bloodPressure = indexesModel.bloodPressure;
+            indexes.pulse = int.Parse(indexesModel.pulse);
+            indexes.bloodSugar = float.Parse(indexesModel.bloodSugar);
+            indexes.bodyTemperature = float.Parse(indexesModel.bodyTemperature);
+            indexes.additionalInformation = indexesModel.additionalInformation;
+
+            return indexes;
+        }
+
         public AppoimentModel toAppoimentModel(Appoiment appoiment)
         {
             throw new System.NotImplementedException();
