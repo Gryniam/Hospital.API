@@ -97,6 +97,8 @@ namespace Hospital.API.Data
                 }
             }
 
+            dbContext.settlementTable.AddRange(settlements);
+
         }
 
         public static void fillUsers(HospitalDbContext dbContext)
