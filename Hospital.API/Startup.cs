@@ -121,7 +121,7 @@ namespace Hospital.API
             });
 
             
-            SampleData.fillBasicData(context);
+            //SampleData.fillBasicData(context);
         }
     }
 }

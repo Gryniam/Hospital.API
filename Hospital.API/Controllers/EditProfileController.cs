@@ -20,11 +20,12 @@ namespace Hospital.API.Controllers
         private readonly IIndexes indexesContext;
        
 
-        public EditProfileController(HospitalDbContext dbContext, IUser user, ICast castContext)
+        public EditProfileController(HospitalDbContext dbContext, IUser user, ICast castContext, IIndexes indexes)
         {
             this.dbContext = dbContext;
             this.userContext = user;
             this.castContext = castContext;
+            this.indexesContext = indexes;
         }
 
 
@@ -117,6 +118,28 @@ namespace Hospital.API.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPost("/updateLocation")]
+        [Authorize]
+        public async Task<IActionResult> updateLocation([FromBody] RegistrationModel regModel)
+        {
+            if(dbContext.settlementTable.Any(x=>x.name == regModel.settlementName))
+            {
+                var a = dbContext.settlementTable.Where(x=>x.name == regModel.settlementName).FirstOrDefault();
+                var user = userContext.getUserById(Guid.Parse(User.Identity.Name));
+                if (a.id != user.settlementId)
+                {
+                    user.settlementId = a.id;
+                    dbContext.userTable.Update(user);
+                    return Ok();
+                }
+                return NotFound();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

@@ -53,26 +53,19 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             EditProfileModel model = new EditProfileModel();
             model.registrationModel = toRegistrationModel(user);
 
-            //model.currentDistrictName = locationContext.getDistrictBySettlementId(
-            //    locationContext.getSettlementById(user.settlementId).id).name;
+            model.currentDistrictName = locationContext.getDistrictBySettlementId(user.settlementId).name;
 
-            model.currentDistrictName = " ";
 
-            //model.currentRegionName = locationContext.getRegionBySettlementId(user.settlementId).name;
+            model.currentRegionName = locationContext.getRegionBySettlementId(user.settlementId).name;
 
-            model.currentRegionName = " ";
 
-            model.noAllergySubstance = dbContext.allergiesTable
-                    .Where(a => a.patiendId != patientId)
-                    .Select(a => a.substance)
-                    .Distinct()
-                    .ToList();
+            model.noAllergySubstance = dbContext.substanceTable
+            .Where(s => !dbContext.allergiesTable.Any(a => a.patiendId == patientId && a.substanceId == s.id))
+             .ToList();
 
-            model.AllergySubstance = model.noAllergySubstance = dbContext.allergiesTable
-                    .Where(a => a.patiendId == patientId)
-                    .Select(a => a.substance)
-                    .Distinct()
-                    .ToList();
+            model.AllergySubstance = dbContext.substanceTable
+            .Join(dbContext.allergiesTable.Where(a => a.patiendId == patientId), s => s.id, a => a.substanceId, (s, a) => s)
+            .ToList();
 
             model.regions = locationContext.regions.ToList();
             model.districts = locationContext.districts.ToList();
