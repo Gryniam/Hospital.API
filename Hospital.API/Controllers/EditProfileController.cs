@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Hospital.API.Models.Entities;
 using System;
 using System.Linq;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Hospital.API.Controllers
 {
@@ -18,14 +20,16 @@ namespace Hospital.API.Controllers
         private readonly IUser userContext;
         private readonly ICast castContext;
         private readonly IIndexes indexesContext;
+        private readonly IPatient patientContext;
        
 
-        public EditProfileController(HospitalDbContext dbContext, IUser user, ICast castContext, IIndexes indexes)
+        public EditProfileController(HospitalDbContext dbContext, IUser user, ICast castContext, IIndexes indexes, IPatient patient)
         {
             this.dbContext = dbContext;
             this.userContext = user;
             this.castContext = castContext;
             this.indexesContext = indexes;
+            this.patientContext = patient;
         }
 
 
@@ -140,6 +144,66 @@ namespace Hospital.API.Controllers
             {
                 return NotFound();
             }
+        }
+
+        [HttpPost("/updateAllergies")]
+        [Authorize]
+        public async Task<IActionResult> updateAllergies([FromBody] List<Substance> substances)
+        {
+            var patientId = patientContext.getPatientByUserId(Guid.Parse(User.Identity.Name)).id;
+            var allergyOfUser = dbContext.allergiesTable.Where(x => x.patiendId == patientId);
+            dbContext.allergiesTable.RemoveRange(allergyOfUser);
+            dbContext.SaveChanges();
+
+            List<Allergy> allergies = new List<Allergy>();   
+            foreach(var substance in substances)
+            {
+                allergies.Add(new Allergy
+                {
+                    id = Guid.NewGuid(),
+                    patiendId = patientId,
+                    substanceId = substance.id
+                });
+            }
+            dbContext.allergiesTable.AddRange(allergies);
+            dbContext.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPost("/sendRequest")]
+        [Authorize]
+        public async Task<IActionResult> sendRequestToBeDoctor([FromBody] RequestModel requestModel)
+        {
+            var speciality = dbContext.specialityTable.Where(x=>x.Name == requestModel.specialityName).FirstOrDefault();
+            if(requestModel.file == null || requestModel.file.Length == 0)
+            {
+                return BadRequest("Please select a file");
+            }
+            if(dbContext.requestTable.Any(x=>x.specialityId == speciality.id 
+            && x.userId == Guid.Parse(User.Identity.Name)))
+            {
+                return BadRequest("Request does exist");
+            }
+
+            byte[] fileData;
+            using (var ms = new MemoryStream())
+            {
+                await requestModel.file.CopyToAsync(ms);
+                fileData = ms.ToArray();
+            }
+
+            Request request = new Request
+            {
+                id = Guid.NewGuid(),
+                userId = Guid.Parse(User.Identity.Name),
+                specialityId = speciality.id,
+                Document = fileData
+            };
+            dbContext.requestTable.Add(request);
+            await dbContext.SaveChangesAsync();
+            
+            return Ok();
         }
     }
 }
