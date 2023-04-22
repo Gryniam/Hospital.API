@@ -13,13 +13,16 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         private readonly ILocation locationContext;
         private readonly IPatient patientContext;
         private readonly IIndexes indexesContext;
+        private readonly IUser userContext;
 
-        public EFCast(HospitalDbContext dbContext, ILocation locationContext, IPatient patientContext, IUser userContext, IIndexes indexesContext)
+        public EFCast(HospitalDbContext dbContext, ILocation locationContext, IPatient patientContext, IUser userContext, 
+            IIndexes indexesContext)
         {
             this.dbContext = dbContext;
             this.locationContext = locationContext;
             this.patientContext = patientContext;
             this.indexesContext = indexesContext;
+            this.userContext = userContext;
         }
 
         public Indexes fromIndexesModel(IndexesModel indexesModel)
@@ -45,6 +48,22 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         public CaseModel toCaseModel(Case currentCase)
         {
             throw new System.NotImplementedException();
+        }
+
+        public DoctorModel toDoctorModel(Doctor currentDoctor)
+        {
+            User user = userContext.getUserByDoctorId(currentDoctor.id);
+            DoctorModel doctorModel = new DoctorModel();
+
+            doctorModel.doctor.id = currentDoctor.id;
+            doctorModel.doctor.userId = currentDoctor.userId;
+            doctorModel.doctor.additionalInformation = currentDoctor.additionalInformation;
+            doctorModel.name = $"{user.surname} {user.name} {user.middleName}";
+            doctorModel.mail = user.mail;
+            doctorModel.age = user.Age.ToString();
+            doctorModel.phoneNumber = user.phoneNumber;
+
+            return doctorModel;
         }
 
         public EditProfileModel toEditProfileModel(User user)
@@ -74,6 +93,24 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             model.indexes = indexesContext.getIndexesByPatientId(patientContext.getPatientByUserId(user.id).id);
 
             return model;
+        }
+
+        public HospitalModel toHospitalModel(Models.Entities.Hospital hospital)
+        {
+            HospitalModel hospitalModel = new HospitalModel();
+
+            hospitalModel.id = hospital.id;
+            hospitalModel.name = hospital.name;
+            hospitalModel.regionDesc = dbContext.regionTable.Find(hospital.regionId).name;
+            hospitalModel.disctrictDesc = dbContext.districtTable.Find(hospital.districtId).name;
+            hospitalModel.settlementDesc = dbContext.settlementTable.Find(hospital.settlementId).name;
+            hospitalModel.TypeDesc = dbContext.typeTable.Find(hospital.typeId).name;
+            hospitalModel.contactNumber = hospital.contactNumber;
+            hospitalModel.adressDesc = hospital.adressDescription;
+            hospitalModel.additionalInformation = hospital.description;
+
+            return hospitalModel;
+            
         }
 
         public RegistrationModel toRegistrationModel(User user)

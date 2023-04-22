@@ -16,5 +16,9 @@ namespace Hospital.API.Data.DataManager.Interfaces
         CaseModel toCaseModel(Case currentCase);
 
         EditProfileModel toEditProfileModel(User user);
+
+        HospitalModel toHospitalModel(Models.Entities.Hospital hospital);
+
+        DoctorModel toDoctorModel(Doctor currentDoctor);
     }
 }

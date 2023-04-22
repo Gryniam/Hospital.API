@@ -15,5 +15,7 @@ namespace Hospital.API.Data.DataManager.Interfaces
         Doctor getDoctorByUserId(Guid userId);
 
         bool isDoctorExist(Guid userId);
+
+        IEnumerable<Doctor> getDoctorsByHospital(Guid hospitalId);
     }
 }
