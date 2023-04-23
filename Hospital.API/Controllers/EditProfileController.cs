@@ -136,6 +136,7 @@ namespace Hospital.API.Controllers
                 {
                     user.settlementId = a.id;
                     dbContext.userTable.Update(user);
+                    dbContext.SaveChanges();
                     return Ok();
                 }
                 return NotFound();
