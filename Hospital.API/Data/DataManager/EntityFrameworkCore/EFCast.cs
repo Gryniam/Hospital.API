@@ -58,11 +58,17 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             doctorModel.doctor.id = currentDoctor.id;
             doctorModel.doctor.userId = currentDoctor.userId;
             doctorModel.doctor.additionalInformation = currentDoctor.additionalInformation;
-            doctorModel.name = $"{user.surname} {user.name} {user.middleName}";
+            doctorModel.doctor.phoneNumber = currentDoctor.phoneNumber;
+            doctorModel.surname = user.surname;
+            doctorModel.name =  user.name;
+            doctorModel.middleName = user.middleName;
             doctorModel.mail = user.mail;
             doctorModel.age = user.Age.ToString();
-            doctorModel.phoneNumber = user.phoneNumber;
 
+            doctorModel.specialties = dbContext.specialityTable.Where(x => dbContext.specialitiesTable.Any(x => x.doctorId == currentDoctor.id)).ToList();
+            
+            
+            
             return doctorModel;
         }
 

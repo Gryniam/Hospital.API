@@ -88,6 +88,8 @@ namespace Hospital.API.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("doctorId");
+
                     b.ToTable("appoimentTable");
                 });
 
@@ -670,12 +672,26 @@ namespace Hospital.API.Migrations
                     b.Property<bool>("isAdminInHospital")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("officeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("statusId")
                         .HasColumnType("int");
 
                     b.HasKey("id");
 
                     b.ToTable("workTable");
+                });
+
+            modelBuilder.Entity("Hospital.API.Models.Entities.Appoiment", b =>
+                {
+                    b.HasOne("Hospital.API.Models.Entities.Doctor", "doctor")
+                        .WithMany()
+                        .HasForeignKey("doctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("doctor");
                 });
 #pragma warning restore 612, 618
         }

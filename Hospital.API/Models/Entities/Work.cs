@@ -29,5 +29,7 @@ namespace Hospital.API.Models.Entities
         public bool isAdminInDepartament { get; set; }
 
         public Guid departamentId { get; set; }
+
+        public Guid officeId { get; set; }
     }
 }

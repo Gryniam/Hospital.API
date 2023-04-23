@@ -465,13 +465,17 @@ namespace Hospital.API.Data
                 var status = context.statusTable.ToList()[random.Next(2)];
                 var department = hospital.departaments[random.Next(hospital.departaments.Count)];
 
+                var officesInDepartament = context.officesTable.Where(x=> x.departamentId == department.id).ToList();
+
                 var work = new Work
                 {
                     id = Guid.NewGuid(),
                     doctorId = doctor.id,
                     hospitalId = hospital.id,
                     statusId = status.id,
-                    departamentId = department.id
+                    departamentId = department.id,
+                    officeId = officesInDepartament[random.Next(officesInDepartament.Count)].id
+                    
                 };
 
                 if (doctors.IndexOf(doctor) < 3)

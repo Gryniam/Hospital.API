@@ -11,6 +11,8 @@ namespace Hospital.API.Models.Entities
         public Patient patient { get; set; }
         public Guid doctorId { get; set; }
         [NotMapped]
+
+        public Guid appoimentTimeId { get; set; }
         public Doctor doctor { get; set; }
 
         public Guid timeId { get; set; }

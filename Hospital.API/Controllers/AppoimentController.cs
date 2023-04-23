@@ -54,7 +54,7 @@ namespace Hospital.API.Controllers
 
             foreach(var doctor in doctors)
             {
-                doctorModels.Add(castContext.toDoctorModel(doctor));
+                doctorModels.Add(castContext.toDoctorModel(doctor);
             }
 
             return Json(doctorModels);

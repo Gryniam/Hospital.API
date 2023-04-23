@@ -1,5 +1,6 @@
 ﻿using Hospital.API.Models.Entities;
 using Hospital.API.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 
 namespace Hospital.API.Data.DataManager.Interfaces
