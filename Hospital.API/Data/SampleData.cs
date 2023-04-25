@@ -477,6 +477,7 @@ namespace Hospital.API.Data
                     officeId = officesInDepartament[random.Next(officesInDepartament.Count)].id
                     
                 };
+                //Тут треба зробити закономірність. Щоб офіси не дублювались
 
                 if (doctors.IndexOf(doctor) < 3)
                 {

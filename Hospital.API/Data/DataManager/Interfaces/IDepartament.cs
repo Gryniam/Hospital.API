@@ -11,6 +11,6 @@ namespace Hospital.API.Data.DataManager.Interfaces
 
         IEnumerable<Departament> getDepartamentsByOwnerId(Guid ownerId);
 
-
+        Departament getDepartamentByOfficeId(Guid officeId);
     }
 }

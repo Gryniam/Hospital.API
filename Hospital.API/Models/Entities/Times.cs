@@ -19,5 +19,7 @@ namespace Hospital.API.Models.Entities
 
         [NotMapped]
         public Time time { get; set; }
+
+        public Guid officeId { get; set; }
     }
 }

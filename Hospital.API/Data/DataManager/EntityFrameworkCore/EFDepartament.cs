@@ -16,6 +16,12 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         }
         public IEnumerable<Departament> departaments => dbContext.departamentTable;
 
+        public Departament getDepartamentByOfficeId(Guid officeId)
+        {
+            var departamentId = dbContext.officesTable.FirstOrDefault(x=>x.officeId == officeId).departamentId;
+            return dbContext.departamentTable.Where(x=> x.id == departamentId).SingleOrDefault();
+        }
+
         public IEnumerable<Departament> getDepartamentsByOwnerId(Guid ownerId)
         {
             return from work in dbContext.workTable

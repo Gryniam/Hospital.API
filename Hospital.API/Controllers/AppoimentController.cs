@@ -1,13 +1,16 @@
 ﻿using Hospital.API.Data;
+using Hospital.API.Data.DataManager.EntityFrameworkCore;
 using Hospital.API.Data.DataManager.Interfaces;
 using Hospital.API.Migrations;
 using Hospital.API.Models.Entities;
 using Hospital.API.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
@@ -19,6 +22,7 @@ namespace Hospital.API.Controllers
         private readonly IHospital hospitalContext;
         private readonly ICast castContext;
         private readonly IDoctor doctorContext;
+        private readonly ILocation locationContext;
 
         public AppoimentController(HospitalDbContext dbContext, IHospital hospital, ICast cast, IDoctor doctorContext)
         {
@@ -26,6 +30,7 @@ namespace Hospital.API.Controllers
             this.hospitalContext = hospital;
             this.castContext = cast;
             this.doctorContext = doctorContext;
+            this.locationContext = locationContext;
         }
 
         [HttpGet("/Hospitals")]
@@ -36,7 +41,7 @@ namespace Hospital.API.Controllers
 
             List<HospitalModel> hospitalModels = new List<HospitalModel>();
 
-            foreach(var hospital in hospitalList)
+            foreach (var hospital in hospitalList)
             {
                 hospitalModels.Add(castContext.toHospitalModel(hospital));
             }
@@ -52,13 +57,58 @@ namespace Hospital.API.Controllers
 
             List<DoctorModel> doctorModels = new List<DoctorModel>();
 
-            foreach(var doctor in doctors)
+            foreach (var doctor in doctors)
             {
                 doctorModels.Add(castContext.toDoctorModel(doctor));
             }
 
-            return Json(doctorModels);
+            return Ok(doctorModels);
         }
 
+        [HttpGet("/Locations")]
+        [Authorize]
+        public ActionResult<List<LocationView>> getLocations()
+        {
+            return Ok(new LocationView
+            {
+                regions = locationContext.regions.ToList(),
+                districts = locationContext.districts.ToList(),
+                settlements = locationContext.settlements.ToList()
+            });
+        }
+
+        [HttpPost("/Doctor/Time")]
+        [Authorize]
+        public ActionResult<List<Time>> getFreeTimeOfDoctorInOffice([FromBody] Guid doctorId, Guid officeId){
+
+            var allTimeOfDoctor = dbContext.timeTable.Where(x => dbContext.timesTable.Any(y => y.doctorId == doctorId)
+            && dbContext.timesTable.Any(x=>x.officeId == officeId)).ToList();
+            List<Time> freeTime = new List<Time>();
+            foreach(var time in allTimeOfDoctor)
+            {
+                if(!dbContext.appoimentTable.Any(x=>x.appoimentTimeId == time.id))
+                {
+                    freeTime.Add(time);
+                }
+            }
+            return Ok(freeTime) ?? null;
+        }
+
+        [HttpPost("/Doctor/Offices")]
+        [Authorize]
+        public ActionResult<List<Offices>> getOfficesOfDoctor([FromBody] Guid hospitalId, Guid doctorId)
+        {
+            var offices = dbContext.officeTable.Where(x => dbContext.workTable.Any(x => x.hospitalId == hospitalId));
+            var officesInHospital = new List<Office>();
+            foreach (var item in offices)
+            {
+                if (dbContext.workTable.Any(x => x.officeId == item.id  && x.doctorId == doctorId))
+                {
+                    officesInHospital.Add(item);
+                }
+            }
+
+            return Ok(officesInHospital);
+        }
     }
 }
