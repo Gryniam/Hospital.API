@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
@@ -23,14 +24,17 @@ namespace Hospital.API.Controllers
         private readonly ICast castContext;
         private readonly IDoctor doctorContext;
         private readonly ILocation locationContext;
+        private readonly IUser userContext;
 
-        public AppoimentController(HospitalDbContext dbContext, IHospital hospital, ICast cast, IDoctor doctorContext)
+        public AppoimentController(HospitalDbContext dbContext, IHospital hospital, ICast cast, 
+            IDoctor doctorContext, ILocation locationContext, IUser userContext)
         {
             this.dbContext = dbContext;
             this.hospitalContext = hospital;
             this.castContext = cast;
             this.doctorContext = doctorContext;
             this.locationContext = locationContext;
+            this.userContext = userContext;
         }
 
         [HttpGet("/Hospitals")]
@@ -79,14 +83,21 @@ namespace Hospital.API.Controllers
 
         [HttpPost("/Doctor/Time")]
         [Authorize]
-        public ActionResult<List<Time>> getFreeTimeOfDoctorInOffice([FromBody] Guid doctorId, Guid officeId){
+        public ActionResult<List<Time>> getFreeTimeOfDoctorInOffice([FromBody] Guid doctorId, Guid officeId, string date){
+
+            DateTime getDate = DateTime.Parse(date).Date;
+            var appoimentsWithThisDate = dbContext.appoimentTable.Where(x=>x.dateTime.Day.Equals(getDate)).ToList();
+
 
             var allTimeOfDoctor = dbContext.timeTable.Where(x => dbContext.timesTable.Any(y => y.doctorId == doctorId)
-            && dbContext.timesTable.Any(x=>x.officeId == officeId)).ToList();
+            && dbContext.timesTable.Any(x => x.officeId == officeId)).ToList();
+
+
+
             List<Time> freeTime = new List<Time>();
             foreach(var time in allTimeOfDoctor)
             {
-                if(!dbContext.appoimentTable.Any(x=>x.appoimentTimeId == time.id))
+                if(!dbContext.appoimentTable.Any(x=>x.appoimentTimeId == time.id && x.dateTime.Date == getDate))
                 {
                     freeTime.Add(time);
                 }
@@ -109,6 +120,23 @@ namespace Hospital.API.Controllers
             }
 
             return Ok(officesInHospital);
+        }
+
+        [HttpPost("/SendAppoiment")]
+        [Authorize]
+        public async Task<IActionResult> createAppoiment([FromBody] Appoiment appoiment)
+        {
+            var userId = userContext.getUserById(Guid.Parse(User.Identity.Name)).id;
+            var doctorUserId = userContext.getUserByDoctorId(appoiment.doctorId).id;
+
+            if(userId == doctorUserId)
+            {
+                return BadRequest("Лікар не може записатися сам до себе");
+            }
+
+            dbContext.appoimentTable.Add(appoiment);
+            dbContext.SaveChanges();
+            return Ok();
         }
     }
 }

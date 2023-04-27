@@ -467,16 +467,28 @@ namespace Hospital.API.Data
 
                 var officesInDepartament = context.officesTable.Where(x=> x.departamentId == department.id).ToList();
 
-                var work = new Work
+                Work work;
+                while(true)
                 {
-                    id = Guid.NewGuid(),
-                    doctorId = doctor.id,
-                    hospitalId = hospital.id,
-                    statusId = status.id,
-                    departamentId = department.id,
-                    officeId = officesInDepartament[random.Next(officesInDepartament.Count)].id
+                    var randomOffice = officesInDepartament[random.Next(officesInDepartament.Count)].id;
+                    if(!context.workTable.Any(x=>x.officeId != randomOffice))
+                    {
+                        work = new Work
+                        {
+                            id = Guid.NewGuid(),
+                            doctorId = doctor.id,
+                            hospitalId = hospital.id,
+                            statusId = status.id,
+                            departamentId = department.id,
+                            officeId = officesInDepartament[random.Next(officesInDepartament.Count)].id
+
+                        };
+                        break;
+                    }
                     
-                };
+                }
+                
+                
                 //Тут треба зробити закономірність. Щоб офіси не дублювались
 
                 if (doctors.IndexOf(doctor) < 3)
