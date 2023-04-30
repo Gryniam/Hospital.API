@@ -65,10 +65,22 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             doctorModel.mail = user.mail;
             doctorModel.age = user.Age.ToString();
 
-            doctorModel.specialties = dbContext.specialityTable.Where(x => dbContext.specialitiesTable.Any(x => x.doctorId == currentDoctor.id)).ToList();
-            
-            
-            
+
+            var allSpecialities = dbContext.specialitiesTable;
+
+            var allSpeciality = dbContext.specialityTable;
+
+            doctorModel.specialties.AddRange(from speciality in allSpeciality
+                                             where allSpecialities.Any(x => x.specialityId == speciality.id && x.doctorId == currentDoctor.id)
+                                             select speciality);
+
+            //foreach (var speciality in allSpeciality)
+            //{
+            //    if (allSpecialities.Any(x => x.specialityId == speciality.id && x.doctorId == currentDoctor.id))
+            //    {
+            //        doctorModel.specialties.Add(speciality);
+            //    }
+            //}
             return doctorModel;
         }
 
