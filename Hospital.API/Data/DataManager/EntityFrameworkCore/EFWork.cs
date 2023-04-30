@@ -20,6 +20,10 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 
         public bool isDoctorExistInWorkTable(Guid doctorId)
         {
+            if (!dbContext.workTable.Any())
+            {
+                return false;
+            }
             if(dbContext.workTable.Any(x=>x.doctorId == doctorId))
             {
                 return true;

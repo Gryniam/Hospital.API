@@ -68,7 +68,7 @@ namespace Hospital.API.Data
           //}
 
 
-              fillTimeAndAppoimentTimeTable(dbContext);
+           fillTimeAndAppoimentTimeTable(dbContext);
 
         }
 
