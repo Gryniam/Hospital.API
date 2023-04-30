@@ -1,7 +1,6 @@
 ﻿using Hospital.API.Data;
 using Hospital.API.Data.DataManager.EntityFrameworkCore;
 using Hospital.API.Data.DataManager.Interfaces;
-using Hospital.API.Migrations;
 using Hospital.API.Models.Entities;
 using Hospital.API.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;

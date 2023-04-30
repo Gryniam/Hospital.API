@@ -62,6 +62,14 @@ namespace Hospital.API.Data
               fillWorkTableAndStatus(dbContext);
           }
 
+          //if (!dbContext.caseTable.Any())
+          //{
+          //      fillCaseTable(dbContext);
+          //}
+
+
+              fillTimeAndAppoimentTimeTable(dbContext);
+
         }
 
         public static void fillLocations(HospitalDbContext dbContext)
@@ -566,5 +574,52 @@ namespace Hospital.API.Data
             context.treatmentTable.AddRange(treatments);
             context.SaveChanges();
         }
+
+
+        public static void fillTimeAndAppoimentTimeTable(HospitalDbContext context)
+        {
+            if (!context.timeTable.Any())
+            {
+                for (int i = 10; i < 18; i++)
+                {
+                    for (int j = 0; j < 60; j += 20)
+                    {
+                        context.timeTable.Add(new Time
+                        {
+                            id = Guid.NewGuid(),
+                            time = $"{i}:{j}"
+                        });
+                    }
+                }
+                context.SaveChanges();
+            }
+            
+            if(!context.timesTable.Any())
+            {
+                var doctors = context.doctorTable.Where(x => context.workTable.Any());
+
+                var doctor = doctors.First();
+                var office = context.workTable.FirstOrDefault(x => x.doctorId == doctor.id);
+
+                for (int i = 0; i < 5; i++)
+                {
+
+                    var time = context.timeTable.Where(x => !context.timesTable.Any(y => y.timeId != x.id)).FirstOrDefault();
+                    context.timesTable.Add(new Times
+                    {
+                        Id = Guid.NewGuid(),
+                        doctorId = doctor.id,
+                        timeId = time.id,
+                        officeId = office.id
+                    });
+
+                }
+                context.SaveChanges();
+            }
+
+            
+        }
+
+        
     }
 }

@@ -71,6 +71,9 @@ namespace Hospital.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("appoimentTimeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("dateTime")
                         .HasColumnType("datetime2");
 
@@ -83,12 +86,7 @@ namespace Hospital.API.Migrations
                     b.Property<Guid>("patientId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("timeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("id");
-
-                    b.HasIndex("doctorId");
 
                     b.ToTable("appoimentTable");
                 });
@@ -540,13 +538,14 @@ namespace Hospital.API.Migrations
 
             modelBuilder.Entity("Hospital.API.Models.Entities.Times", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("doctorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("officeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("timeId")
@@ -681,17 +680,6 @@ namespace Hospital.API.Migrations
                     b.HasKey("id");
 
                     b.ToTable("workTable");
-                });
-
-            modelBuilder.Entity("Hospital.API.Models.Entities.Appoiment", b =>
-                {
-                    b.HasOne("Hospital.API.Models.Entities.Doctor", "doctor")
-                        .WithMany()
-                        .HasForeignKey("doctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("doctor");
                 });
 #pragma warning restore 612, 618
         }

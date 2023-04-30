@@ -7,7 +7,7 @@ namespace Hospital.API.Models.Entities
     public class Times
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
 
         public Guid doctorId { get; set; }

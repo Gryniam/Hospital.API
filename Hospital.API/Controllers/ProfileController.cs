@@ -189,11 +189,15 @@ namespace Hospital.API.Controllers
         [Authorize]
         public bool isAdminInHospital()
         {
-            var doctorId = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name)).id;
+            var doctor = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name));
+            if(doctor == null)
+            {
+                return false;
+            }
 
-            if (doctorContext.isDoctorExist(Guid.Parse(User.Identity.Name)) && workContext.isDoctorExistInWorkTable(doctorId))
+            if (doctorContext.isDoctorExist(Guid.Parse(User.Identity.Name)) && workContext.isDoctorExistInWorkTable(doctor.id))
                 return workContext.getAllWorks
-                    .Any(x => x.doctorId == doctorId
+                    .Any(x => x.doctorId == doctor.id
                         && x.isAdminInHospital);
 
             return false;
@@ -203,11 +207,15 @@ namespace Hospital.API.Controllers
         [Authorize]
         public bool isAdminInDepartament()
         {
-            var doctorId = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name)).id;
+            var doctor = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name));
+            if(doctor == null)
+            {
+                return false;
+            }
 
-            if (doctorContext.isDoctorExist(Guid.Parse(User.Identity.Name)) && workContext.isDoctorExistInWorkTable(doctorId))
+            if (doctorContext.isDoctorExist(Guid.Parse(User.Identity.Name)) && workContext.isDoctorExistInWorkTable(doctor.id))
                 return workContext.getAllWorks
-                    .Any(x => x.doctorId == doctorId
+                    .Any(x => x.doctorId == doctor.id
                         && x.isAdminInDepartament);
 
             return false;
@@ -226,18 +234,28 @@ namespace Hospital.API.Controllers
         [Authorize]
         public ActionResult<List<Models.Entities.Hospital>> getMyHospitals()
         {
-            var doctorId = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name)).id;
+            var doctor = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name));
 
-            return hospitalContext.GetHospitalsByOwnerId(doctorId).ToList();
+            if(doctor == null)
+            {
+                return null;
+            }
+
+            return hospitalContext.GetHospitalsByOwnerId(doctor.id).ToList();
         }
 
         [HttpGet("myDepartaments")]
         [Authorize]
         public ActionResult<List<Departament>> getMyDepartaments()
         {
-            var doctorId = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name)).id;
+            var doctor = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name));
 
-            return departamentContext.getDepartamentsByOwnerId(doctorId).ToList();
+            if (doctor == null)
+            {
+                return null;
+            }
+
+            return departamentContext.getDepartamentsByOwnerId(doctor.id).ToList();
         }
     }
 }
