@@ -20,12 +20,11 @@ namespace Hospital.API.Models.ViewModels
 
         public List<Specialty> specialties { get; set; }
 
-        public List<String> departaments { get; set;}
-
 
         public DoctorModel()
         {
             doctor = new Doctor();
+            specialties = new List<Specialty>();
         }
     }
 }
