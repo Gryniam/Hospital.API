@@ -89,14 +89,14 @@ namespace Hospital.API.Controllers
 
         [HttpPost("/Doctor/Time")]
         [Authorize]
-        public ActionResult<List<Time>> getFreeTimeOfDoctorInOffice([FromBody] Guid doctorId, Guid officeId, string date){
+        public ActionResult<List<Time>> getFreeTimeOfDoctorInOffice([FromBody] DoctorOfficesModel doctorOffices){
 
-            DateTime getDate = DateTime.Parse(date).Date;
+            DateTime getDate = DateTime.Parse(doctorOffices.date).Date;
             var appoimentsWithThisDate = dbContext.appoimentTable.Where(x=>x.dateTime.Day.Equals(getDate)).ToList();
 
 
-            var allTimeOfDoctor = dbContext.timeTable.Where(x => dbContext.timesTable.Any(y => y.doctorId == doctorId)
-            && dbContext.timesTable.Any(x => x.officeId == officeId)).ToList();
+            var allTimeOfDoctor = dbContext.timeTable.Where(x => dbContext.timesTable.Any(y => y.doctorId == doctorOffices.doctorId)
+            && dbContext.timesTable.Any(x => x.officeId == doctorOffices.officeId)).ToList();
 
 
 
@@ -113,13 +113,13 @@ namespace Hospital.API.Controllers
 
         [HttpPost("/Doctor/Offices")]
         [Authorize]
-        public ActionResult<List<Offices>> getOfficesOfDoctor([FromBody] Guid hospitalId, Guid doctorId)
+        public ActionResult<List<Offices>> getOfficesOfDoctor([FromBody] HospitalDoctorModel hospitalDoctorModel)
         {
-            var offices = dbContext.officeTable.Where(x => dbContext.workTable.Any(x => x.hospitalId == hospitalId));
+            var offices = dbContext.officeTable.Where(x => dbContext.workTable.Any(x => x.hospitalId == hospitalDoctorModel.hospitalId));
             var officesInHospital = new List<Office>();
             foreach (var item in offices)
             {
-                if (dbContext.workTable.Any(x => x.officeId == item.id  && x.doctorId == doctorId))
+                if (dbContext.workTable.Any(x => x.officeId == item.id  && x.doctorId == hospitalDoctorModel.doctorId))
                 {
                     officesInHospital.Add(item);
                 }
