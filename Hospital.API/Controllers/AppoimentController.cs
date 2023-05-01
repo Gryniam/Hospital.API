@@ -79,6 +79,13 @@ namespace Hospital.API.Controllers
                 settlements = locationContext.settlements.ToList()
             });
         }
+        [HttpGet("/Specialities")]
+        [Authorize]
+        public ActionResult<List<Specialty>> getSpecialities()
+        {
+            List<Specialty> specialty = dbContext.specialityTable.ToList();
+            return Ok(specialty);
+        }
 
         [HttpPost("/Doctor/Time")]
         [Authorize]
