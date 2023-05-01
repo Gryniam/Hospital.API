@@ -111,19 +111,23 @@ namespace Hospital.API.Controllers
             return Ok(freeTime) ?? null;
         }
 
+        //ФІКСИТИ
         [HttpPost("/Doctor/Offices")]
         [Authorize]
         public ActionResult<List<Offices>> getOfficesOfDoctor([FromBody] HospitalDoctorModel hospitalDoctorModel)
         {
             var offices = dbContext.officeTable.Where(x => dbContext.workTable.Any(x => x.hospitalId == hospitalDoctorModel.hospitalId));
-            var officesInHospital = new List<Office>();
-            foreach (var item in offices)
-            {
-                if (dbContext.workTable.Any(x => x.officeId == item.id  && x.doctorId == hospitalDoctorModel.doctorId))
-                {
-                    officesInHospital.Add(item);
-                }
-            }
+            var officesInHospital = (from item in offices
+                                     where dbContext.workTable.Any(x => x.officeId == item.id && x.doctorId == hospitalDoctorModel.doctorId)
+                                     select item).ToList();
+
+            //foreach (var item in offices)
+            //{
+            //    if (dbContext.workTable.Any(x => x.officeId == item.id && x.doctorId == hospitalDoctorModel.doctorId))
+            //    {
+            //        officesInHospital.Add(item);
+            //    }
+            //}
 
             return Ok(officesInHospital);
         }
