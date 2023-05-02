@@ -52,7 +52,7 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         public List<Doctor> getDoctorsByHospital(Guid hospitalId)
         {
             List<Doctor> doctors = new List<Doctor>();
-            var workTable = dbContext.workTable;
+            var workTable = dbContext.workTable.ToList();
             foreach (var doctor in workTable)
             {
                 if(doctor.hospitalId == hospitalId)
