@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Hospital.API.Models.Entities;
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using System.Reflection;
 
 namespace Hospital.API.Data
 {
@@ -71,6 +72,18 @@ namespace Hospital.API.Data
            fillTimeAndAppoimentTimeTable(dbContext);
 
         }
+        public static void ClearAllTables(DbContext context)
+        {
+            var tables = context.Model.GetEntityTypes().Select(t => t.GetTableName()).ToList();
+            
+            foreach(var a in tables)
+            {
+                context.Database.ExecuteSqlRaw($"TRUNCATE TABLE {a}");
+            }
+            // Зберігаємо зміни
+            context.SaveChanges();
+        }
+
 
         public static void fillLocations(HospitalDbContext dbContext)
         {
@@ -261,6 +274,7 @@ namespace Hospital.API.Data
             context.SaveChanges();
         }
 
+        //пофіксити
         public static void fillSymptomDiseaseAndSymptoms(HospitalDbContext context)
         {
             for (int i = 1; i <= 20; i++)
@@ -478,7 +492,7 @@ namespace Hospital.API.Data
                 Work work;
                 while(true)
                 {
-                    var randomOffice = officesInDepartament[random.Next(officesInDepartament.Count)].id;
+                    var randomOffice = officesInDepartament[random.Next(officesInDepartament.Count)].officeId;
                     if(!context.workTable.Any(x=>x.officeId != randomOffice))
                     {
                         work = new Work
@@ -488,7 +502,7 @@ namespace Hospital.API.Data
                             hospitalId = hospital.id,
                             statusId = status.id,
                             departamentId = department.id,
-                            officeId = officesInDepartament[random.Next(officesInDepartament.Count)].id
+                            officeId = officesInDepartament[random.Next(officesInDepartament.Count)].officeId
 
                         };
                         break;

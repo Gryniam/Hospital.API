@@ -120,8 +120,9 @@ namespace Hospital.API
                 endpoints.MapControllers();
             });
 
-            
+
             //SampleData.fillBasicData(context);
+            //SampleData.ClearAllTables(context);
         }
     }
 }

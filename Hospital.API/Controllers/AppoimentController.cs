@@ -96,6 +96,7 @@ namespace Hospital.API.Controllers
 
             DateTime getDate = DateTime.Parse(doctorOffices.date).Date;
 
+
             return Ok();
         }
 
@@ -103,9 +104,17 @@ namespace Hospital.API.Controllers
         [Authorize]
         public ActionResult<List<Offices>> getOfficesOfDoctor([FromBody] HospitalDoctorModel hospitalDoctorModel)
         {
-            
+            List<Office> offices = new List<Office>();
+            List<Work> works = dbContext.workTable.ToList();
+            foreach(var work in works)
+            {
+                if(work.doctorId == hospitalDoctorModel.doctorId && work.hospitalId == hospitalDoctorModel.hospitalId)
+                {
+                    offices.Add(dbContext.officeTable.Find(work.officeId));
+                }
+            }
 
-            return Ok();
+            return Ok(offices);
         }
 
         [HttpPost("/SendAppoiment")]
