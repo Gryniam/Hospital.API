@@ -56,7 +56,8 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             {
                 if(doctor.hospitalId == hospitalId)
                 {
-                    doctors.Add(dbContext.doctorTable.Find(doctor.doctorId));
+                    var findedDoctor = dbContext.doctorTable.Find(doctor.doctorId);
+                    doctors.Add(findedDoctor);
                 }
             }
 
