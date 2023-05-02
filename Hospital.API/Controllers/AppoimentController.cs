@@ -62,7 +62,10 @@ namespace Hospital.API.Controllers
 
             foreach (var doctor in doctors)
             {
-                doctorModels.Add(castContext.toDoctorModel(doctor));
+                if(dbContext.timesTable.Any(x=>x.doctorId == doctor.id))
+                {
+                    doctorModels.Add(castContext.toDoctorModel(doctor));
+                }
             }
 
             return Ok(doctorModels);
@@ -92,44 +95,17 @@ namespace Hospital.API.Controllers
         public ActionResult<List<Time>> getFreeTimeOfDoctorInOffice([FromBody] DoctorOfficesModel doctorOffices){
 
             DateTime getDate = DateTime.Parse(doctorOffices.date).Date;
-            var appoimentsWithThisDate = dbContext.appoimentTable.Where(x=>x.dateTime.Day.Equals(getDate)).ToList();
 
-
-            var allTimeOfDoctor = dbContext.timeTable.Where(x => dbContext.timesTable.Any(y => y.doctorId == doctorOffices.doctorId)
-            && dbContext.timesTable.Any(x => x.officeId == doctorOffices.officeId)).ToList();
-
-
-
-            List<Time> freeTime = new List<Time>();
-            foreach(var time in allTimeOfDoctor)
-            {
-                if(!dbContext.appoimentTable.Any(x=>x.appoimentTimeId == time.id && x.dateTime.Date == getDate))
-                {
-                    freeTime.Add(time);
-                }
-            }
-            return Ok(freeTime) ?? null;
+            return Ok();
         }
 
-        //ФІКСИТИ
         [HttpPost("/Doctor/Offices")]
         [Authorize]
         public ActionResult<List<Offices>> getOfficesOfDoctor([FromBody] HospitalDoctorModel hospitalDoctorModel)
         {
-            var offices = dbContext.officeTable.Where(x => dbContext.workTable.Any(x => x.hospitalId == hospitalDoctorModel.hospitalId));
-            var officesInHospital = (from item in offices
-                                     where dbContext.workTable.Any(x => x.officeId == item.id && x.doctorId == hospitalDoctorModel.doctorId)
-                                     select item).ToList();
+            
 
-            //foreach (var item in offices)
-            //{
-            //    if (dbContext.workTable.Any(x => x.officeId == item.id && x.doctorId == hospitalDoctorModel.doctorId))
-            //    {
-            //        officesInHospital.Add(item);
-            //    }
-            //}
-
-            return Ok(officesInHospital);
+            return Ok();
         }
 
         [HttpPost("/SendAppoiment")]

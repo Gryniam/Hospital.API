@@ -49,10 +49,18 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             }
         }
 
-        public IEnumerable<Doctor> getDoctorsByHospital(Guid hospitalId)
+        public List<Doctor> getDoctorsByHospital(Guid hospitalId)
         {
-            return dbContext.doctorTable
-            .Where(d => dbContext.workTable.Any(w => w.doctorId == d.id));
+            List<Doctor> doctors = new List<Doctor>();
+            foreach(var doctor in dbContext.workTable)
+            {
+                if(doctor.hospitalId == hospitalId)
+                {
+                    doctors.Add(dbContext.doctorTable.Find(doctor.doctorId));
+                }
+            }
+
+            return doctors;
         }
 
         public bool isDoctorExist(Guid userId)
