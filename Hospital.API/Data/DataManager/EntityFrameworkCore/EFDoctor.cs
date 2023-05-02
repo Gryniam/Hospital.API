@@ -52,12 +52,12 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         public List<Doctor> getDoctorsByHospital(Guid hospitalId)
         {
             List<Doctor> doctors = new List<Doctor>();
-            foreach(var doctor in dbContext.workTable)
+            var workTable = dbContext.workTable;
+            foreach (var doctor in workTable)
             {
                 if(doctor.hospitalId == hospitalId)
                 {
-                    var findedDoctor = dbContext.doctorTable.Find(doctor.doctorId);
-                    doctors.Add(findedDoctor);
+                    doctors.Add(dbContext.doctorTable.Find(doctor.doctorId));
                 }
             }
 
