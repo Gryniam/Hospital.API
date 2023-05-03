@@ -95,9 +95,15 @@ namespace Hospital.API.Controllers
         public ActionResult<List<Time>> getFreeTimeOfDoctorInOffice([FromBody] DoctorOfficesModel doctorOffices){
 
             DateTime getDate = DateTime.Parse(doctorOffices.date).Date;
+ 
+            var freeTimeOfDoctor = dbContext.timesTable
+            .Where(item => item.doctorId == doctorOffices.doctorId && item.officeId == doctorOffices.officeId)
+            .ToList();
 
-
-            return Ok();
+            var result = (from item in freeTimeOfDoctor
+                          where !dbContext.appoimentTable.Any(x => x.appoimentTimeId == item.Id && x.dateTime.Date == getDate)
+                          select dbContext.timeTable.Find(item.timeId)).ToList();
+            return Ok(result);
         }
 
         [HttpPost("/Doctor/Offices")]

@@ -282,19 +282,19 @@ namespace Hospital.API.Data
                 context.symptomTable.Add(new Symptom { id = Guid.NewGuid(), name = $"Symptom{i}" });
             }
             context.SaveChanges();
-            var random = new Random();
+            //var random = new Random();
 
-            for (int i = 1; i <= 5; i++)
-            {
-                var disease = new Disease { id = Guid.NewGuid(), name = $"Disease{i}" };
-                List<Symptom> symptoms = context.symptomTable.OrderBy(s => Guid.NewGuid()).Take(3).ToList();
-                for (int j = 1; j <= 3; j++)
-                {
-                    // зберігаємо запис про зв'язок між хворобою та симптомом
-                    context.symptomsTable.Add(new Symptoms { id = Guid.NewGuid(), diseaseId = disease.id, symptomId = symptoms[i].id });
-                }
-                context.diseaseTable.Add(disease);
-            }
+            //for (int i = 1; i <= 5; i++)
+            //{
+            //    var disease = new Disease { id = Guid.NewGuid(), name = $"Disease{i}" };
+            //    List<Symptom> symptoms = context.symptomTable.OrderBy(s => Guid.NewGuid()).Take(3).ToList();
+            //    for (int j = 1; j <= 3; j++)
+            //    {
+            //        // зберігаємо запис про зв'язок між хворобою та симптомом
+            //        context.symptomsTable.Add(new Symptoms { id = Guid.NewGuid(), diseaseId = disease.id, symptomId = symptoms[i].id });
+            //    }
+            //    context.diseaseTable.Add(disease);
+            //}
             context.SaveChanges();
         }
 
@@ -618,17 +618,27 @@ namespace Hospital.API.Data
                 for (int i = 0; i < 5; i++)
                 {
 
-                    var time = context.timeTable.Where(x => !context.timesTable.Any(y => y.timeId != x.id)).FirstOrDefault();
+                    Time time = null;
+                    foreach(var iterator in context.timeTable.ToList())
+                    {
+                        if (!context.timesTable.Any(x=>x.timeId == iterator.id))
+                        {
+                            time = iterator;
+                            break;
+                        }
+                    }
+
+                    
                     context.timesTable.Add(new Times
                     {
                         Id = Guid.NewGuid(),
                         doctorId = doctor.id,
                         timeId = time.id,
-                        officeId = office.id
+                        officeId = office.officeId
                     });
-
+                    context.SaveChanges();
                 }
-                context.SaveChanges();
+                //context.SaveChanges();
             }
 
             
