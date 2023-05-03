@@ -147,6 +147,8 @@ namespace Hospital.API.Controllers
                 return BadRequest("Лікар не може записатися сам до себе");
             }
 
+            appoiment.id = Guid.NewGuid();
+
             var indexes = indexesContext.getIndexesOfUser(userId);
             indexes.additionalInformation = appoiment.additionalInformation;
             indexesContext.updateIndexesOfUser(indexes, userId);
