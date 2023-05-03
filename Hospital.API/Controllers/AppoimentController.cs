@@ -24,9 +24,10 @@ namespace Hospital.API.Controllers
         private readonly IDoctor doctorContext;
         private readonly ILocation locationContext;
         private readonly IUser userContext;
+        private readonly IIndexes indexesContext;
 
         public AppoimentController(HospitalDbContext dbContext, IHospital hospital, ICast cast, 
-            IDoctor doctorContext, ILocation locationContext, IUser userContext)
+            IDoctor doctorContext, ILocation locationContext, IUser userContext, IIndexes indexes)
         {
             this.dbContext = dbContext;
             this.hospitalContext = hospital;
@@ -34,6 +35,8 @@ namespace Hospital.API.Controllers
             this.doctorContext = doctorContext;
             this.locationContext = locationContext;
             this.userContext = userContext;
+            this.indexesContext = indexes;
+            
         }
 
         [HttpGet("/Hospitals")]
@@ -95,6 +98,11 @@ namespace Hospital.API.Controllers
         public ActionResult<List<Time>> getFreeTimeOfDoctorInOffice([FromBody] DoctorOfficesModel doctorOffices){
 
             DateTime getDate = DateTime.Parse(doctorOffices.date).Date;
+
+            if(getDate < DateTime.Now)
+            {
+                return BadRequest("Дата запису не може бути минулою)))))))");
+            }  
  
             var freeTimeOfDoctor = dbContext.timesTable
             .Where(item => item.doctorId == doctorOffices.doctorId && item.officeId == doctorOffices.officeId)
@@ -134,6 +142,13 @@ namespace Hospital.API.Controllers
             {
                 return BadRequest("Лікар не може записатися сам до себе");
             }
+
+            var indexes = indexesContext.getIndexesOfUser(userId);
+            indexes.additionalInformation = appoiment.additionalInformation;
+            indexesContext.updateIndexesOfUser(indexes, userId);
+
+
+            appoiment.dateTime = DateTime.Parse(appoiment.date).Date;
 
             dbContext.appoimentTable.Add(appoiment);
             dbContext.SaveChanges();

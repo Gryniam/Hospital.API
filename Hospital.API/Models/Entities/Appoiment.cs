@@ -10,6 +10,7 @@ namespace Hospital.API.Models.Entities
         public Guid doctorId { get; set; }
         public Guid appoimentTimeId { get; set; }
         public Guid officeId { get; set; }
+
         [NotMapped]
         public Office office { get; set;}
 
@@ -17,6 +18,9 @@ namespace Hospital.API.Models.Entities
 
         [NotMapped]
         public string date { get; set; }
+
+        [NotMapped]
+        public string additionalInformation { get; set; }
 
     }
 }
