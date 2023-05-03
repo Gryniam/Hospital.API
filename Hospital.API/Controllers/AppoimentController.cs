@@ -25,6 +25,7 @@ namespace Hospital.API.Controllers
         private readonly ILocation locationContext;
         private readonly IUser userContext;
         private readonly IIndexes indexesContext;
+        private readonly IPatient patientContext;
 
         public AppoimentController(HospitalDbContext dbContext, IHospital hospital, ICast cast, 
             IDoctor doctorContext, ILocation locationContext, IUser userContext, IIndexes indexes)
@@ -36,6 +37,7 @@ namespace Hospital.API.Controllers
             this.locationContext = locationContext;
             this.userContext = userContext;
             this.indexesContext = indexes;
+            this.patientContext = patientContext;
             
         }
 
@@ -138,6 +140,8 @@ namespace Hospital.API.Controllers
             var userId = userContext.getUserById(Guid.Parse(User.Identity.Name)).id;
             var doctorUserId = userContext.getUserByDoctorId(appoiment.doctorId).id;
 
+            
+
             if(userId == doctorUserId)
             {
                 return BadRequest("Лікар не може записатися сам до себе");
@@ -146,6 +150,12 @@ namespace Hospital.API.Controllers
             var indexes = indexesContext.getIndexesOfUser(userId);
             indexes.additionalInformation = appoiment.additionalInformation;
             indexesContext.updateIndexesOfUser(indexes, userId);
+
+
+            appoiment.patientId = patientContext.getPatientById(userId).UserId;
+            var timeId = appoiment.appoimentTimeId;
+
+            appoiment.appoimentTimeId = dbContext.timesTable.Where(x=>x.timeId == timeId).FirstOrDefault().Id;
 
 
             appoiment.dateTime = DateTime.Parse(appoiment.date).Date;
