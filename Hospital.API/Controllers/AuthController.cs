@@ -32,15 +32,18 @@ namespace Hospital.API.Controllers
         private readonly HashPassword hashPassword;
         private readonly IUser userContext;
         private readonly IDoctor doctorContext;
+        private readonly IIndexes indexesContext;
         public IConfiguration Configuration { get; }
 
-        public AuthController(HospitalDbContext hospitalDbContext, HashPassword hashPassword, IUser user, IDoctor doctor, IConfiguration conf)
+        public AuthController(HospitalDbContext hospitalDbContext, HashPassword hashPassword, IUser user, 
+            IDoctor doctor, IConfiguration conf, IIndexes indexesContext)
         {
             this.dbContext = hospitalDbContext;
             this.hashPassword = hashPassword;
             this.userContext = user;
             this.doctorContext = doctor;
             this.Configuration = conf;
+            this.indexesContext = indexesContext;
         }
 
         [HttpGet]
@@ -86,6 +89,8 @@ namespace Hospital.API.Controllers
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var jwtToken = tokenHandler.WriteToken(token);
+
+                indexesContext.addIndexesToUser(userId);
 
                 await dbContext.SaveChangesAsync();
                 return Ok(jwtToken);
