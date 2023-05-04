@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 
 namespace Hospital.API.Controllers
 {
+    [ApiController]
+    [Route("/[controller]")]
     public class AppoimentController : Controller
     {
         private readonly HospitalDbContext dbContext;

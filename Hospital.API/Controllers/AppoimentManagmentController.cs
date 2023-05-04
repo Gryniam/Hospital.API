@@ -8,6 +8,9 @@ using System;
 
 namespace Hospital.API.Controllers
 {
+
+    [ApiController]
+    [Route("/[controller]")]
     public class AppoimentManagmentController : Controller
     {
         private readonly HospitalDbContext dbContext;
