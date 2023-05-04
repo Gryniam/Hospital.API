@@ -48,6 +48,8 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 
         }
 
+       
+
         public IEnumerable<Models.Entities.Hospital> GetHospitalsByOwnerId(Guid ownerId)
         {
             return dbContext.workTable
@@ -56,6 +58,34 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
                     work => work.hospitalId,
                     hospital => hospital.id,
                     (work, hospital) => hospital);
+        }
+
+        public Models.Entities.Hospital getHospitalByOfficeId(Guid id)
+        {
+            Models.Entities.Hospital resultHospital;
+
+            //foreach(var offices in dbContext.officesTable.ToList())
+            //{
+            //    if(offices.officeId == id)
+            //    {
+            //        var depId = offices.departamentId;
+            //        foreach (var departament in dbContext.departamentTable.ToList())
+            //        {
+            //            if(departament.id == depId)
+            //            {
+            //                resultHospital = dbContext.hospitalTable.Find(departament.hospitalId);
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
+            resultHospital = (from offices in dbContext.officesTable
+                                  where offices.officeId == id
+                                  join departament in dbContext.departamentTable
+                                  on offices.departamentId equals departament.id
+                                  select dbContext.hospitalTable.Find(departament.hospitalId)).FirstOrDefault();
+
+            return resultHospital;
         }
     }
 }

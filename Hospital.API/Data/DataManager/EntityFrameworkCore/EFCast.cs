@@ -1,9 +1,11 @@
 ﻿using Hospital.API.Data.DataManager.Interfaces;
 using Hospital.API.Models.Entities;
 using Hospital.API.Models.ViewModels;
+using Microsoft.Identity.Client;
 using System;
 using System.Linq;
 using System.Reflection;
+using IUser = Hospital.API.Data.DataManager.Interfaces.IUser;
 
 namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 {
@@ -14,15 +16,17 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         private readonly IPatient patientContext;
         private readonly IIndexes indexesContext;
         private readonly IUser userContext;
+        private readonly IHospital hospitalContext;
 
         public EFCast(HospitalDbContext dbContext, ILocation locationContext, IPatient patientContext, IUser userContext, 
-            IIndexes indexesContext)
+            IIndexes indexesContext, IHospital hospitalContext)
         {
             this.dbContext = dbContext;
             this.locationContext = locationContext;
             this.patientContext = patientContext;
             this.indexesContext = indexesContext;
             this.userContext = userContext;
+            this.hospitalContext = hospitalContext;
         }
 
         public Indexes fromIndexesModel(IndexesModel indexesModel)
@@ -42,7 +46,32 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 
         public AppoimentModel toAppoimentModel(Appoiment appoiment)
         {
-            throw new System.NotImplementedException();
+            var userPatient = userContext.getUserByPatientId(appoiment.patientId);
+
+            var userDoctor = userContext.getUserByDoctorId(appoiment.doctorId);
+
+            var office = dbContext.officeTable.Find(appoiment.officeId);
+            AppoimentModel appoimentModel = new AppoimentModel();
+
+            appoimentModel.id = appoiment.id;
+
+            appoimentModel.patientName = $"{userPatient.surname} {userPatient.name} {userPatient.middleName}";
+
+            appoimentModel.doctorName = $"{userDoctor.surname} {userDoctor.name} {userDoctor.middleName}";
+
+            appoimentModel.indexesOfPatient = indexesContext.getIndexesByPatientId(appoiment.patientId);
+
+            appoimentModel.officeName = office.name;
+
+            appoimentModel.officeNumberInHospital = office.numberInHospital;
+
+            appoimentModel.officeDesc = office.additionalInformation;
+
+            appoimentModel.hospitalName = hospitalContext.getHospitalByOfficeId(appoiment.officeId).name;
+
+            appoimentModel.Date = appoiment.dateTime.Date.ToString();
+
+            return appoimentModel;
         }
 
         public CaseModel toCaseModel(Case currentCase)

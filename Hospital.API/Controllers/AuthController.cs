@@ -90,9 +90,10 @@ namespace Hospital.API.Controllers
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var jwtToken = tokenHandler.WriteToken(token);
 
-                indexesContext.addIndexesToUser(userId);
+                
 
                 await dbContext.SaveChangesAsync();
+                indexesContext.addIndexesToUser(userId);
                 return Ok(jwtToken);
             }
             else

@@ -9,6 +9,8 @@ namespace Hospital.API.Data.DataManager.Interfaces
     {
         IEnumerable<Models.Entities.Hospital> GetHospitals { get; }
 
+        API.Models.Entities.Hospital getHospitalByOfficeId(Guid id);
+
         IEnumerable<Models.Entities.Hospital> GetHospitalsByOwnerId(Guid ownerId);
 
         Models.Entities.Hospital getHospitalByCase(Case insertedCase);
