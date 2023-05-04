@@ -31,9 +31,10 @@ namespace Hospital.API.Controllers
         private readonly IDoctor doctorContext;
         private readonly IWork workContext;
         private readonly IDepartament departamentContext;
+        private readonly ICast castContext;
 
         public ProfileController(HospitalDbContext dbContext, IUser user, IPatient patient, IHospital hospital, IDoctor doctor,
-            IWork work, IDepartament departament)
+            IWork work, IDepartament departament, ICast castContext)
         {
             this.dbContext = dbContext;
             this.userContext = user;
@@ -42,6 +43,7 @@ namespace Hospital.API.Controllers
             this.doctorContext = doctor;
             this.workContext = work;
             this.departamentContext = departament;
+            this.castContext = castContext;
         }
 
         [HttpGet]
@@ -81,30 +83,13 @@ namespace Hospital.API.Controllers
 
             var listOfAppoiments = dbContext.appoimentTable.Where(x=>x.patientId == patientId).ToList();
 
-            var userId = userContext.getUserByPatientId(patientId);
-
             List<AppoimentModel> appoiments = new List<AppoimentModel>();
 
             foreach(var item in listOfAppoiments)
             {
                 item.office = dbContext.officeTable.Find(item.officeId);
-                appoiments.Add(new AppoimentModel
-                {
-                    id = item.id,
-                    patientName = $"{dbContext.userTable.Find(userId).surname} " +
-                    $"{dbContext.userTable.Find(userId).name} " +
-                    $"{dbContext.userTable.Find(userId).middleName}",
-                    doctorName = $"{userContext.getUserByDoctorId(item.doctorId).surname}" +
-                    $"{userContext.getUserByDoctorId(item.doctorId).name} " +
-                    $"{userContext.getUserByDoctorId(item.doctorId).middleName}",
-                    indexesOfPatient = dbContext.indexesTable.Find(userId),
-                    officeName = item.office.name,
-                    officeNumberInHospital = item.office.numberInHospital,
-                    officeDesc = item.office.additionalInformation,
-                    hospitalName = "Тестується",
-                    Date = item.dateTime.ToString()
 
-                }) ;
+                appoiments.Add(castContext.toAppoimentModel(item));
             }
 
             return Json(appoiments);
@@ -148,7 +133,6 @@ namespace Hospital.API.Controllers
         public ActionResult<List<AppoimentModel>> getAppoimentsForDoctor()
         {
             Doctor doctor = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name));
-            User userDoctor = userContext.getUserByDoctorId(doctor.id);
 
             var listOfAppoiments = dbContext.appoimentTable.Where(x => x.doctorId == doctor.id);
             
@@ -156,23 +140,7 @@ namespace Hospital.API.Controllers
 
             foreach(var item in listOfAppoiments)
             {
-                var userId = userContext.getUserByPatientId(item.patientId);
-                appoiments.Add(new AppoimentModel
-                {
-                    id = item.id,
-                    patientName = $"{dbContext.userTable.Find(userId).surname} " +
-                    $"{dbContext.userTable.Find(userId).name} " +
-                    $"{dbContext.userTable.Find(userId).middleName}",
-                    doctorName = $"{userDoctor.surname}" +
-                    $"{userDoctor.name} " +
-                    $"{userDoctor.middleName}",
-                    indexesOfPatient = dbContext.indexesTable.Find(userId),
-                    officeName = item.office.name,
-                    officeNumberInHospital = item.office.numberInHospital,
-                    officeDesc = item.office.additionalInformation,
-                    hospitalName = "Тестується",
-                    Date = item.dateTime.ToString()
-                });
+                appoiments.Add(castContext.toAppoimentModel(item));
             }
 
             return appoiments;

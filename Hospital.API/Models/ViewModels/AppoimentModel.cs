@@ -7,13 +7,20 @@ namespace Hospital.API.Models.ViewModels
     {
         public Guid id { get; set; }
 
-        public string patientName { get; set; }
+        public RegistrationModel patient { get; set; }
 
-        public string doctorName { get; set; }
+        public Guid patientId { get; set; }    
+
+        public RegistrationModel doctor { get; set; }
+
+        public Guid doctorId { get; set; }
 
         public Indexes indexesOfPatient { get;set; }
 
+
         public string officeName { get; set; }
+
+        public Guid officeId { get; set; }
 
         public int officeNumberInHospital { get; set; }
 

@@ -26,8 +26,6 @@ namespace Hospital.API.Models.Entities
 
         [AllowNull]
         public Guid userPictureId { get; set; }
-        [NotMapped]
-        public byte[] userPicture { get; set; }
 
         public string phoneNumber { get; set; }
 

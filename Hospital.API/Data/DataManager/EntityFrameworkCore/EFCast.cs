@@ -55,13 +55,20 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 
             appoimentModel.id = appoiment.id;
 
-            appoimentModel.patientName = $"{userPatient.surname} {userPatient.name} {userPatient.middleName}";
+            appoimentModel.patient = toRegistrationModel(userPatient);
 
-            appoimentModel.doctorName = $"{userDoctor.surname} {userDoctor.name} {userDoctor.middleName}";
+            appoimentModel.patientId = appoiment.patientId;
+
+            appoimentModel.doctor =toRegistrationModel(userDoctor);
+
+            appoimentModel.doctorId = appoiment.doctorId;
+
 
             appoimentModel.indexesOfPatient = indexesContext.getIndexesByPatientId(appoiment.patientId);
 
             appoimentModel.officeName = office.name;
+
+            appoimentModel.officeId = office.id;
 
             appoimentModel.officeNumberInHospital = office.numberInHospital;
 
@@ -174,18 +181,6 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
                 regModel.settlementName = dbContext.settlementTable.Find(user.settlementId).name;
 
             return regModel;
-
-            //return new RegistrationModel {
-            //    surname = user.surname,
-            //    name = user.name,
-            //    middleName = user.middleName,
-            //    password = string.Empty,
-            //    mail = user.mail,
-            //    gender = dbContext.genderTable.Find(user.genderId).genderName,
-            //    birthDate = user.birthDate.ToString(),
-            //    phoneNumber = user.phoneNumber,
-            //    settlementName = dbContext.settlementTable.Find(user.settlementId).name
-            //};
         }
 
         public UserProfileModel toUserProFileModel(User user)
