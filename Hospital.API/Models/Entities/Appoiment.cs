@@ -19,8 +19,5 @@ namespace Hospital.API.Models.Entities
         [NotMapped]
         public string date { get; set; }
 
-        [NotMapped]
-        public string additionalInformation { get; set; }
-
     }
 }

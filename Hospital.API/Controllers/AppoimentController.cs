@@ -28,7 +28,7 @@ namespace Hospital.API.Controllers
         private readonly IPatient patientContext;
 
         public AppoimentController(HospitalDbContext dbContext, IHospital hospital, ICast cast, 
-            IDoctor doctorContext, ILocation locationContext, IUser userContext, IIndexes indexes)
+            IDoctor doctorContext, ILocation locationContext, IUser userContext, IIndexes indexes, IPatient patientContext)
         {
             this.dbContext = dbContext;
             this.hospitalContext = hospital;
@@ -135,10 +135,15 @@ namespace Hospital.API.Controllers
 
         [HttpPost("/SendAppoiment")]
         [Authorize]
-        public async Task<IActionResult> createAppoiment([FromBody] Appoiment appoiment)
+        public async Task<IActionResult> createAppoiment([FromBody] SendingModel appoimentSend)
         {
+            Appoiment appoiment = new Appoiment();
+
+            appoiment.doctorId = Guid.Parse(appoimentSend.doctorId);
+            appoiment.officeId = Guid.Parse(appoimentSend.officeId);
+
             var userId = userContext.getUserById(Guid.Parse(User.Identity.Name)).id;
-            var doctorUserId = userContext.getUserByDoctorId(appoiment.doctorId).id;
+            var doctorUserId = userContext.getUserByDoctorId(Guid.Parse(appoimentSend.doctorId)).id;
 
             
 
@@ -150,17 +155,21 @@ namespace Hospital.API.Controllers
             appoiment.id = Guid.NewGuid();
 
             var indexes = indexesContext.getIndexesOfUser(userId);
-            indexes.additionalInformation = appoiment.additionalInformation;
+            indexes.additionalInformation = appoimentSend.additionalInformation;
             indexesContext.updateIndexesOfUser(indexes, userId);
 
 
-            appoiment.patientId = patientContext.getPatientById(userId).UserId;
-            var timeId = appoiment.appoimentTimeId;
+            appoiment.patientId = patientContext.getPatientByUserId(userId).id;
+            var timeId = Guid.Parse(appoimentSend.appoimentTimeId);
 
             appoiment.appoimentTimeId = dbContext.timesTable.Where(x=>x.timeId == timeId).FirstOrDefault().Id;
 
+            if(dbContext.appoimentTable.Any(x=>x.appoimentTimeId == appoiment.appoimentTimeId))
+            {
+                return BadRequest("На цю годину уже хтось записаний");
+            }
 
-            appoiment.dateTime = DateTime.Parse(appoiment.date).Date;
+            appoiment.dateTime = DateTime.Parse(appoimentSend.date).Date;
 
             dbContext.appoimentTable.Add(appoiment);
             dbContext.SaveChanges();
