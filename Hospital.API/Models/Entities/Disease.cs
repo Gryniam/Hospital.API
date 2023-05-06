@@ -16,5 +16,6 @@ namespace Hospital.API.Models.Entities
         [NotMapped]
 
         public List<Symptom> symptoms { get; set; }
+        
     }
 }

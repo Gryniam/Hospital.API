@@ -17,7 +17,6 @@ namespace Hospital.API.Models.ViewModels
 
         public Indexes indexesOfPatient { get;set; }
 
-
         public string officeName { get; set; }
 
         public Guid officeId { get; set; }

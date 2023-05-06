@@ -39,10 +39,10 @@ namespace Hospital.API.Data
                 fillPreparationAndPreparations(dbContext);
           }
 
-          if(!dbContext.symptomTable.Any() && !dbContext.symptomsTable.Any())
-          {
-                fillSymptomDiseaseAndSymptoms(dbContext);
-          }
+         
+          
+          fillSymptomDiseaseAndSymptoms(dbContext);
+          
 
           if (!dbContext.hospitalTable.Any())
           {
@@ -63,13 +63,12 @@ namespace Hospital.API.Data
               fillWorkTableAndStatus(dbContext);
           }
 
-          //if (!dbContext.caseTable.Any())
-          //{
-          //      fillCaseTable(dbContext);
-          //}
+            
+              fillCaseTable(dbContext);
+            
 
 
-           fillTimeAndAppoimentTimeTable(dbContext);
+            fillTimeAndAppoimentTimeTable(dbContext);
 
         }
         public static void ClearAllTables(DbContext context)
@@ -277,25 +276,32 @@ namespace Hospital.API.Data
         //пофіксити
         public static void fillSymptomDiseaseAndSymptoms(HospitalDbContext context)
         {
-            for (int i = 1; i <= 20; i++)
+            if(!context.symptomTable.Any())
             {
-                context.symptomTable.Add(new Symptom { id = Guid.NewGuid(), name = $"Symptom{i}" });
+                for (int i = 1; i <= 20; i++)
+                {
+                    context.symptomTable.Add(new Symptom { id = Guid.NewGuid(), name = $"Symptom{i}" });
+                }
+                context.SaveChanges();
             }
-            context.SaveChanges();
-            //var random = new Random();
+           
+            if(!context.diseaseTable.Any())
+            {
+                var random = new Random();
 
-            //for (int i = 1; i <= 5; i++)
-            //{
-            //    var disease = new Disease { id = Guid.NewGuid(), name = $"Disease{i}" };
-            //    List<Symptom> symptoms = context.symptomTable.OrderBy(s => Guid.NewGuid()).Take(3).ToList();
-            //    for (int j = 1; j <= 3; j++)
-            //    {
-            //        // зберігаємо запис про зв'язок між хворобою та симптомом
-            //        context.symptomsTable.Add(new Symptoms { id = Guid.NewGuid(), diseaseId = disease.id, symptomId = symptoms[i].id });
-            //    }
-            //    context.diseaseTable.Add(disease);
-            //}
-            context.SaveChanges();
+                for (int i = 1; i <= 10; i++)
+                {
+                    var disease = new Disease { id = Guid.NewGuid(), name = $"Disease{i}" };
+                    List<Symptom> symptoms = context.symptomTable.OrderBy(s => Guid.NewGuid()).Take(3).ToList();
+                    for (int j = 0; j < 3; j++)
+                    {
+                        // зберігаємо запис про зв'язок між хворобою та симптомом
+                        context.symptomsTable.Add(new Symptoms { id = Guid.NewGuid(), diseaseId = disease.id, symptomId = symptoms[j].id });
+                    }
+                    context.diseaseTable.Add(disease);
+                }
+                context.SaveChanges();
+            }
         }
 
         public static void fillHospitalList(HospitalDbContext context)
@@ -528,65 +534,69 @@ namespace Hospital.API.Data
         public static void fillCaseTable(HospitalDbContext context)
         {
             var random = new Random();
-            var caseStatuses = new List<CaseStatus>
+            if(!context.casesStatusTable.Any())
+            {
+                var caseStatuses = new List<CaseStatus>
             {
                  new CaseStatus {statusName = "Активний"},
                  new CaseStatus {statusName = "Неактивний"},
             };
-            context.casesStatusTable.AddRange(caseStatuses);
-            context.SaveChanges();
-
-            List<Case> cases = new List<Case>();
-            for(int i = 0; i < 2; i++)
-            {
-                var randomPatient = context.patientTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
-                // отримуємо рандомного лікаря із таблиці Doctor
-                var randomDoctor = context.doctorTable.Where(x => x.userId != randomPatient.UserId).OrderBy(x => Guid.NewGuid()).FirstOrDefault();
-                // отримуємо рандомну хворобу із таблиці Disease
-                var randomDisease = context.diseaseTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
-                // отримуємо рандомний статус із таблиці CaseStatus
-                var randomCaseStatus = context.casesStatusTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
-                // отримуємо рандомний офіс із таблиці Office
-                var randomOffice = context.officeTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
-
-                var caseS = new Case
-                {
-                    id = Guid.NewGuid(),
-                    patientId = randomPatient.id,
-                    doctorId = randomDoctor.id,
-                    diseaseId = randomDisease.id,
-                    caseStatusId = randomCaseStatus.id,
-                    officeId = randomOffice.id,
-                    anamnesis = "test1",
-                    createDate = DateTime.Now
-                };
-
-                cases.Add(caseS);
+                context.casesStatusTable.AddRange(caseStatuses);
+                context.SaveChanges();
             }
+            
+
+            //List<Case> cases = new List<Case>();
+            //for(int i = 0; i < 2; i++)
+            //{
+            //    var randomPatient = context.patientTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+            //    // отримуємо рандомного лікаря із таблиці Doctor
+            //    var randomDoctor = context.doctorTable.Where(x => x.userId != randomPatient.UserId).OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+            //    // отримуємо рандомну хворобу із таблиці Disease
+            //    var randomDisease = context.diseaseTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+            //    // отримуємо рандомний статус із таблиці CaseStatus
+            //    var randomCaseStatus = context.casesStatusTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+            //    // отримуємо рандомний офіс із таблиці Office
+            //    var randomOffice = context.officeTable.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+
+            //    var caseS = new Case
+            //    {
+            //        id = Guid.NewGuid(),
+            //        patientId = randomPatient.id,
+            //        doctorId = randomDoctor.id,
+            //        diseaseId = randomDisease.id,
+            //        caseStatusId = randomCaseStatus.id,
+            //        officeId = randomOffice.id,
+            //        anamnesis = "test1",
+            //        createDate = DateTime.Now
+            //    };
+
+            //    cases.Add(caseS);
+            //}
             
 
            
             
-            context.caseTable.AddRange(cases);
-            context.SaveChanges();
+            //context.caseTable.AddRange(cases);
+            //context.SaveChanges();
 
-            var preparations = context.preparationTable.ToList();
-            //var mYcases = context.caseTable.ToList();
+            //var preparations = context.preparationTable.ToList();
+            ////var mYcases = context.caseTable.ToList();
 
-            List<Treatment> treatments = new List<Treatment>();
-            foreach (var caseItem in cases)
-            {
-                // Get two random preparations
-                var preparation1 = preparations[random.Next(preparations.Count)];
-                var preparation2 = preparations[random.Next(preparations.Count)];
+            //List<Treatment> treatments = new List<Treatment>();
+            //foreach (var caseItem in cases)
+            //{
+            //    // Get two random preparations
+            //    var preparation1 = preparations[random.Next(preparations.Count)];
+            //    var preparation2 = preparations[random.Next(preparations.Count)];
 
-                // Create treatments for each preparation
-                treatments.Add(new Treatment { preparation = preparation1 });
-                treatments.Add(new Treatment { preparation = preparation2 });
-            }
+            //    // Create treatments for each preparation
+            //    treatments.Add(new Treatment { preparation = preparation1 });
+            //    treatments.Add(new Treatment { preparation = preparation2 });
+            //}
 
-            context.treatmentTable.AddRange(treatments);
-            context.SaveChanges();
+            //context.treatmentTable.AddRange(treatments);
+            //context.SaveChanges();
         }
 
 

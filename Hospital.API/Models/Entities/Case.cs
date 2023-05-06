@@ -14,25 +14,11 @@ namespace Hospital.API.Models.Entities
         public Guid id { get; set; }
 
         public Guid patientId { get; set; }
-        [NotMapped]
-        public Patient patient { get; set; }
 
         public Guid doctorId { get; set; }
-        [NotMapped]
-        public Doctor doctor { get; set; }
-
         public Guid diseaseId { get; set; }
-        [NotMapped]
-        public Disease disease { get; set; }
-
         public Guid caseStatusId {get;set;}
-        [NotMapped]
-        public CaseStatus caseStatus { get; set; }
-
         public Guid officeId { get; set; }
-        [NotMapped]
-        public Office office { get; set; }
-
         public string anamnesis { get; set; }
         [AllowNull]
         public string treatmentInformation { get; set; }

@@ -15,8 +15,6 @@ namespace Hospital.API.Models.Entities
         public Guid diseaseId { get; set; }
 
         public Guid symptomId { get; set; }
-        [NotMapped]
 
-        public Symptom symptom;
     }
 }
