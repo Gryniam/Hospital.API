@@ -5,6 +5,7 @@ using Hospital.API.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,10 @@ namespace Hospital.API.Controllers
         [Authorize]
         public ActionResult<List<Symptom>> getSymptomByString([FromBody] string inputString)
         {
-            List<Symptom> symptoms = dbContext.symptomTable.Where(x => x.name == inputString).ToList();
+            if(inputString.IsNullOrEmpty()) {
+                return Ok(new List<Symptom>());
+            }
+            List<Symptom> symptoms = dbContext.symptomTable.Where(x => x.name.ToLower() == inputString.ToLower() || x.name.ToLower().Contains(inputString.ToLower())).ToList();
 
             return Ok(symptoms);
         }
@@ -97,9 +101,11 @@ namespace Hospital.API.Controllers
         [Authorize]
         public async Task<IActionResult> createCase([FromBody] CaseRequestModel caseInput)
         {
+
             if(caseInput == null) {
                 return BadRequest("Дані не надходять");
             }
+            
             Case resultCase = new Case();
 
             resultCase.id = Guid.NewGuid();
@@ -118,11 +124,22 @@ namespace Hospital.API.Controllers
             }
 
             dbContext.caseTable.Add(resultCase);
+            deleteAppoiment(caseInput.appoimentId);
             dbContext.SaveChanges();
 
             return Ok(resultCase);
         }
-        
+
+        [HttpPost("/DeleteAppoiment")]
+        [Authorize]
+        public IActionResult deleteAppoiment([FromBody] Guid appoimentId)
+        {
+            var currentAppoiment = dbContext.appoimentTable.Find(appoimentId);
+            dbContext.appoimentTable.Remove(currentAppoiment);
+
+            return Ok();
+        }
+
 
 
     }

@@ -134,7 +134,7 @@ namespace Hospital.API.Controllers
         {
             Doctor doctor = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name));
 
-            var listOfAppoiments = dbContext.appoimentTable.Where(x => x.doctorId == doctor.id);
+            var listOfAppoiments = dbContext.appoimentTable.Where(x => x.doctorId == doctor.id).ToList();
             
             List<AppoimentModel> appoiments = new List<AppoimentModel>();
 

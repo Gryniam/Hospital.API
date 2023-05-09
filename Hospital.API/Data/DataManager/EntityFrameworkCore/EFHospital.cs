@@ -79,11 +79,6 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
                     }
                 }
             }
-            //resultHospital = (from offices in dbContext.officesTable
-            //                      where offices.officeId == id
-            //                      join departament in dbContext.departamentTable
-            //                      on offices.departamentId equals departament.id
-            //                      select dbContext.hospitalTable.Find(departament.hospitalId)).FirstOrDefault();
 
             return resultHospital;
         }
