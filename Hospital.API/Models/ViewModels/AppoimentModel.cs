@@ -29,5 +29,7 @@ namespace Hospital.API.Models.ViewModels
 
         public string Date { get; set; }
 
+        public string Time { get; set; }
+
     }
 }

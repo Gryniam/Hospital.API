@@ -9,6 +9,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Http;
+using System.Text.Json.Nodes;
+using System.Xml.Linq;
 
 namespace Hospital.API.Controllers
 {
@@ -174,14 +177,15 @@ namespace Hospital.API.Controllers
 
         [HttpPost("/sendRequest")]
         [Authorize]
-        public async Task<IActionResult> sendRequestToBeDoctor([FromBody] RequestModel requestModel)
+        public async Task<IActionResult> sendRequestToBeDoctor([FromBody] Specialty currentSpeciality, [FromForm] IFormFile file)
         {
-            var speciality = dbContext.specialityTable.Where(x=>x.Name == requestModel.specialityName).FirstOrDefault();
-            if(requestModel.file == null || requestModel.file.Length == 0)
+            //var speciality = dbContext.specialityTable.Where(x=>x.Name == currentSpeciality.Name).FirstOrDefault();
+            var speciality = dbContext.specialityTable.Find(currentSpeciality.id);
+            if (speciality == null || file.Length == 0)
             {
                 return BadRequest("Please select a file");
             }
-            if(dbContext.requestTable.Any(x=>x.specialityId == speciality.id 
+            if (dbContext.requestTable.Any(x => x.specialityId == speciality.id
             && x.userId == Guid.Parse(User.Identity.Name)))
             {
                 return BadRequest("Request does exist");
@@ -190,7 +194,7 @@ namespace Hospital.API.Controllers
             byte[] fileData;
             using (var ms = new MemoryStream())
             {
-                await requestModel.file.CopyToAsync(ms);
+                await file.CopyToAsync(ms);
                 fileData = ms.ToArray();
             }
 
@@ -203,7 +207,7 @@ namespace Hospital.API.Controllers
             };
             dbContext.requestTable.Add(request);
             await dbContext.SaveChangesAsync();
-            
+
             return Ok();
         }
     }

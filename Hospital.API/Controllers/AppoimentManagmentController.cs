@@ -136,7 +136,7 @@ namespace Hospital.API.Controllers
         {
             var currentAppoiment = dbContext.appoimentTable.Find(appoimentId);
             dbContext.appoimentTable.Remove(currentAppoiment);
-
+            dbContext.SaveChanges();
             return Ok();
         }
 

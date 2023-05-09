@@ -76,7 +76,9 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 
             appoimentModel.hospitalName = hospitalContext.getHospitalByOfficeId(appoiment.officeId).name;
 
-            appoimentModel.Date = appoiment.dateTime.Date.ToString();
+            appoimentModel.Date = appoiment.dateTime.Date.ToString().Split(" ")[0];
+
+            appoimentModel.Time = dbContext.timeTable.Find(dbContext.timesTable.Find(appoiment.appoimentTimeId).timeId).time;
 
             return appoimentModel;
         }
