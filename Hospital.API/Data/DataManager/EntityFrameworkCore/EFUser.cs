@@ -80,7 +80,8 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 
         public User getUserByPatientId(Guid id)
         {
-            return dbContext.userTable.Find(Ipatient.getPatientById(id).UserId);
+            var userId = Ipatient.getPatientById(id).UserId;
+            return dbContext.userTable.Find(userId);
         }
         public User getUserByDoctorId(Guid id)
         {

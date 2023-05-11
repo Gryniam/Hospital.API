@@ -92,7 +92,7 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             
             caseModel.id = currentCase.id;
             caseModel.patientModel = toRegistrationModel(userContext.getUserByPatientId(currentCase.patientId));
-            caseModel.doctorModel = toRegistrationModel(userContext.getUserByPatientId(currentCase.doctorId));
+            caseModel.doctorModel = toRegistrationModel(userContext.getUserByDoctorId(currentCase.doctorId));
 
             caseModel.diseaseName = dbContext.diseaseTable.Find(currentCase.diseaseId).name;
             caseModel.caseStatus = dbContext.casesStatusTable.Find(currentCase.caseStatusId).statusName;
