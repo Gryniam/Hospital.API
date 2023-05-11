@@ -168,9 +168,9 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             model.currentRegionName = locationContext.getRegionBySettlementId(user.settlementId).name;
 
 
-            model.noAllergySubstance = substanceContext.getAllergySubstance(patientId).ToList();
+            model.noAllergySubstance = substanceContext.getNoAllergySubstance(patientId).ToList();
 
-            model.AllergySubstance = substanceContext.getNoAllergySubstance(patientId).ToList();
+            model.AllergySubstance = substanceContext.getAllergySubstance(patientId).ToList();
 
             model.regions = locationContext.regions.ToList();
             model.districts = locationContext.districts.ToList();
