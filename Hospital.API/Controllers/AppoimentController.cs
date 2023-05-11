@@ -28,9 +28,13 @@ namespace Hospital.API.Controllers
         private readonly IUser userContext;
         private readonly IIndexes indexesContext;
         private readonly IPatient patientContext;
+        private readonly ITime timeContext;
+        private readonly ISpecialty specialtyContext;
+        private readonly IAppoiment appoimentContext;
 
         public AppoimentController(HospitalDbContext dbContext, IHospital hospital, ICast cast, 
-            IDoctor doctorContext, ILocation locationContext, IUser userContext, IIndexes indexes, IPatient patientContext)
+            IDoctor doctorContext, ILocation locationContext, IUser userContext, IIndexes indexes, IPatient patientContext, ITime timeContext,
+            ISpecialty specialtyContext, IAppoiment appoimentContext)
         {
             this.dbContext = dbContext;
             this.hospitalContext = hospital;
@@ -40,7 +44,9 @@ namespace Hospital.API.Controllers
             this.userContext = userContext;
             this.indexesContext = indexes;
             this.patientContext = patientContext;
-            
+            this.timeContext = timeContext;
+            this.specialtyContext = specialtyContext;
+            this.appoimentContext = appoimentContext;
         }
 
         [HttpGet("/Hospitals")]
@@ -69,7 +75,7 @@ namespace Hospital.API.Controllers
 
             foreach (var doctor in doctors)
             {
-                if(dbContext.timesTable.Any(x=>x.doctorId == doctor.id))
+                if(timeContext.getTimesTable.Any(x=>x.doctorId == doctor.id))
                 {
                     doctorModels.Add(castContext.toDoctorModel(doctor));
                 }
@@ -93,7 +99,7 @@ namespace Hospital.API.Controllers
         [Authorize]
         public ActionResult<List<Specialty>> getSpecialities()
         {
-            List<Specialty> specialty = dbContext.specialityTable.ToList();
+            List<Specialty> specialty = specialtyContext.getSpecialityTable.ToList();
             return Ok(specialty);
         }
 
@@ -106,15 +112,15 @@ namespace Hospital.API.Controllers
             if(getDate < DateTime.Now)
             {
                 return BadRequest("Дата запису не може бути минулою)))))))");
-            }  
- 
-            var freeTimeOfDoctor = dbContext.timesTable
+            }
+
+            var freeTimeOfDoctor = timeContext.getTimesTable
             .Where(item => item.doctorId == doctorOffices.doctorId && item.officeId == doctorOffices.officeId)
             .ToList();
 
             var result = (from item in freeTimeOfDoctor
-                          where !dbContext.appoimentTable.Any(x => x.appoimentTimeId == item.Id && x.dateTime.Date == getDate)
-                          select dbContext.timeTable.Find(item.timeId)).ToList();
+                          where !appoimentContext.appoiments.Any(x => x.appoimentTimeId == item.Id && x.dateTime.Date == getDate)
+                          select timeContext.getTimeById(item.timeId)).ToList();
             return Ok(result);
         }
 
@@ -164,16 +170,16 @@ namespace Hospital.API.Controllers
             appoiment.patientId = patientContext.getPatientByUserId(userId).id;
             var timeId = Guid.Parse(appoimentSend.appoimentTimeId);
 
-            appoiment.appoimentTimeId = dbContext.timesTable.Where(x=>x.timeId == timeId).FirstOrDefault().Id;
+            appoiment.appoimentTimeId = timeContext.getTimesTable.Where(x=>x.timeId == timeId).FirstOrDefault().Id;
 
-            if(dbContext.appoimentTable.Any(x=>x.appoimentTimeId == appoiment.appoimentTimeId))
+            if(appoimentContext.appoiments.Any(x=>x.appoimentTimeId == appoiment.appoimentTimeId))
             {
                 return BadRequest("На цю годину уже хтось записаний");
             }
 
             appoiment.dateTime = DateTime.Parse(appoimentSend.date).Date;
 
-            dbContext.appoimentTable.Add(appoiment);
+            appoimentContext.addAppoiment(appoiment);
             dbContext.SaveChanges();
             return Ok();
         }

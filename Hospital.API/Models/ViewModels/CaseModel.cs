@@ -10,7 +10,10 @@ namespace Hospital.API.Models.ViewModels
     {
         public Guid id { get; set; }
 
-        public string patientName { get; set;}
+        public RegistrationModel patientModel { get; set; } 
+
+        public RegistrationModel doctorModel { get; set; }
+
         public string diseaseName { get;set; }
         public string caseStatus { get; set; }
 
@@ -18,9 +21,11 @@ namespace Hospital.API.Models.ViewModels
 
         public Office office { get; set; }
 
-        public string hospitalName { get; set; }
+        public HospitalModel hospital { get; set; }
 
         public string anamnesis { get; set; }
+
+        public List<Preparation> treatment { get; set; }
         public string treatmentInformation { get; set; }
 
         public string createDate { get; set; }

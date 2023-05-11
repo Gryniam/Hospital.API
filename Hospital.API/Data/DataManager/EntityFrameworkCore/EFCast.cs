@@ -3,6 +3,7 @@ using Hospital.API.Models.Entities;
 using Hospital.API.Models.ViewModels;
 using Microsoft.Identity.Client;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using IUser = Hospital.API.Data.DataManager.Interfaces.IUser;
@@ -17,9 +18,10 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         private readonly IIndexes indexesContext;
         private readonly IUser userContext;
         private readonly IHospital hospitalContext;
+        private readonly ISubstance substanceContext;
 
         public EFCast(HospitalDbContext dbContext, ILocation locationContext, IPatient patientContext, IUser userContext, 
-            IIndexes indexesContext, IHospital hospitalContext)
+            IIndexes indexesContext, IHospital hospitalContext, ISubstance substanceContext)
         {
             this.dbContext = dbContext;
             this.locationContext = locationContext;
@@ -27,6 +29,7 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             this.indexesContext = indexesContext;
             this.userContext = userContext;
             this.hospitalContext = hospitalContext;
+            this.substanceContext = substanceContext;
         }
 
         public Indexes fromIndexesModel(IndexesModel indexesModel)
@@ -85,7 +88,38 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
 
         public CaseModel toCaseModel(Case currentCase)
         {
-            throw new System.NotImplementedException();
+            CaseModel caseModel = new CaseModel();
+            
+            caseModel.id = currentCase.id;
+            caseModel.patientModel = toRegistrationModel(userContext.getUserByPatientId(currentCase.patientId));
+            caseModel.doctorModel = toRegistrationModel(userContext.getUserByPatientId(currentCase.doctorId));
+
+            caseModel.diseaseName = dbContext.diseaseTable.Find(currentCase.diseaseId).name;
+            caseModel.caseStatus = dbContext.casesStatusTable.Find(currentCase.caseStatusId).statusName;
+
+            caseModel.officeId = currentCase.officeId;
+            caseModel.office = dbContext.officeTable.Find(currentCase.officeId);
+
+            caseModel.hospital = toHospitalModel(hospitalContext.getHospitalByOfficeId(currentCase.officeId));
+
+            caseModel.anamnesis = currentCase.anamnesis;
+
+
+            caseModel.treatment = (from preparation in dbContext.preparationTable.ToList()
+                                   where dbContext.treatmentTable.Any(x => x.caseId == currentCase.id && x.preparationId == preparation.id)
+                                   select preparation).ToList();
+            //foreach (var preparation in dbContext.preparationTable.ToList())
+            //{
+            //    if (dbContext.treatmentTable.Any(x => x.caseId == currentCase.id && x.preparationId == preparation.id))
+            //    {
+            //        caseModel.treatment.Add(preparation);
+            //    }
+            //}
+            caseModel.treatmentInformation = currentCase.treatmentInformation;
+
+            caseModel.createDate = currentCase.createDate.ToString();
+
+            return caseModel;
         }
 
         public DoctorModel toDoctorModel(Doctor currentDoctor)
@@ -134,13 +168,9 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             model.currentRegionName = locationContext.getRegionBySettlementId(user.settlementId).name;
 
 
-            model.noAllergySubstance = dbContext.substanceTable
-            .Where(s => !dbContext.allergiesTable.Any(a => a.patiendId == patientId && a.substanceId == s.id))
-             .ToList();
+            model.noAllergySubstance = substanceContext.getAllergySubstance(patientId).ToList();
 
-            model.AllergySubstance = dbContext.substanceTable
-            .Join(dbContext.allergiesTable.Where(a => a.patiendId == patientId), s => s.id, a => a.substanceId, (s, a) => s)
-            .ToList();
+            model.AllergySubstance = substanceContext.getNoAllergySubstance(patientId).ToList();
 
             model.regions = locationContext.regions.ToList();
             model.districts = locationContext.districts.ToList();

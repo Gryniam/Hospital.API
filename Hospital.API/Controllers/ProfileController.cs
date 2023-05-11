@@ -109,21 +109,8 @@ namespace Hospital.API.Controllers
 
             foreach (var item in listOfCases)
             {
-                cases.Add(new CaseModel
-                {
-                    id = item.id,
-                    patientName = $"{user.surname} " +
-                    $"{user.name} " +
-                    $"{user.middleName}",
-                    caseStatus = dbContext.casesStatusTable.Find(item.caseStatusId).statusName,
-                    office = dbContext.officeTable.Find(item.officeId),
-                    diseaseName = dbContext.diseaseTable.Find(item.diseaseId).name,
-                    hospitalName = hospitalContext.getHospitalByCase(item).name,
-                    anamnesis = item.anamnesis,
-                    treatmentInformation = item.treatmentInformation,
-                    createDate = item.createDate.ToString()
+                cases.Add(castContext.toCaseModel(item));
 
-                }) ;
             }
             return Json(cases);
         }

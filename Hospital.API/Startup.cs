@@ -73,6 +73,12 @@ namespace Hospital.API
             services.AddScoped<ICast, EFCast>();
             services.AddScoped<IIndexes, EFIndexes>();
             services.AddScoped<ILocation, EFLocation>();
+            services.AddScoped<IAppoiment, EFAppoiment>();
+            services.AddScoped<ICase,EFCase>();
+            services.AddScoped<ISpecialty, EFSpecialty>();
+            services.AddScoped<ISubstance, EFSubstance>();
+            services.AddScoped<ITime,EFTime>();
+            
 
             services.AddHttpContextAccessor();
             services.AddControllers();
@@ -121,8 +127,9 @@ namespace Hospital.API
             });
 
 
-            SampleData.fillBasicData(context);
+
             //SampleData.ClearAllTables(context);
+            //ManualData.fillData(context);
         }
     }
 }
