@@ -154,11 +154,20 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             if (treatment != caseModel.treatment)
             {
                 resultCase.treatmentInformation += "Було змінено лікування: ";
-                foreach (var item in caseModel.treatment)
+                if(caseModel.treatment != null)
                 {
-                    resultCase.treatmentInformation += $"{item.name}|";
+                    foreach (var item in caseModel.treatment)
+                    {
+                        resultCase.treatmentInformation += $"{item.name}|";
+                    }
                 }
             }
+
+            if(caseModel.caseStatus != dbContext.casesStatusTable.Find(resultCase.caseStatusId).statusName)
+            {
+                resultCase.caseStatusId = dbContext.casesStatusTable.FirstOrDefault(x => x.statusName == caseModel.caseStatus).id;
+            }
+
 
 
             return resultCase;

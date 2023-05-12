@@ -665,6 +665,19 @@ namespace Hospital.API.Data
                 context.caseTable.AddRange(caseList);
                 context.SaveChanges();
             }
+            List<Treatment> treatments = new List<Treatment>
+            {
+                new Treatment{id=Guid.Parse("87cc1dd9-9e21-40ef-b7e1-faec88b411cf"), caseId = Guid.Parse("83d8e883-6f2e-5831-a776-6efabe41f21b"), preparationId = Guid.Parse("15c894d4-599b-573a-8d37-f802bdeddae8")},
+                new Treatment{id=Guid.Parse("9ba7a205-bcde-4807-8c34-b44b3104e8a2"), caseId = Guid.Parse("83d8e883-6f2e-5831-a776-6efabe41f21b"), preparationId = Guid.Parse("c6911467-545b-503c-8344-8240be7ad37a")},
+
+                new Treatment{id=Guid.Parse("e9a36b63-4ebd-4a8a-9ac7-12efc3a1bc40"), caseId = Guid.Parse("4672cc58-63a6-5154-9691-ce1b39fdc807"), preparationId = Guid.Parse("f7740154-612b-5374-a697-59eef0867373")},
+                new Treatment{id=Guid.Parse("208ce9de-da42-413b-bbe9-e3d93f143d5b"), caseId = Guid.Parse("4672cc58-63a6-5154-9691-ce1b39fdc807"), preparationId = Guid.Parse("12752f1b-3334-5642-904b-36495306d21c")}
+            };
+            if(!context.treatmentTable.Any())
+            {
+                context.treatmentTable.AddRange(treatments);
+                context.SaveChanges();
+            }
 
         }
     }
