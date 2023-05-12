@@ -84,15 +84,15 @@ namespace Hospital.API.Controllers
             //List<Preparation> resultList = new List<Preparation>();
             //foreach (var item in dbContext.preparationsTable.ToList())
             //{
-            //    if(!currentTreatment.Any(x=>x.id != item.preparationId) && !allergyPreparations.Any(x=>x.id != item.substanceId))
+            //    if (!currentTreatment.Any(x => x.id == item.preparationId) && !allergyPreparations.Any(x => x.id == item.substanceId))
             //    {
             //        resultList.Add(dbContext.preparationTable.Find(item.preparationId));
             //    }
             //}
             List<Preparation> resultList = dbContext.preparationsTable
                 .ToList()
-                .Where(item => !currentTreatment.Any(x => x.id != item.preparationId)
-                                && !allergyPreparations.Any(x => x.id != item.substanceId))
+                .Where(item => !currentTreatment.Any(x => x.id == item.preparationId)
+                                && !allergyPreparations.Any(x => x.id == item.substanceId)).DistinctBy(x=>x.preparationId)
                 .Select(item => dbContext.preparationTable.Find(item.preparationId))
                 .ToList();
 
@@ -115,7 +115,14 @@ namespace Hospital.API.Controllers
         {
             Case caseForUpdate = castContext.fromCaseModel(caseModel);
 
-            dbContext.caseTable.Update(caseForUpdate);
+            var updateCase = caseContext.getCaseById(caseModel.id);
+
+            updateCase.treatmentInformation = caseForUpdate.treatmentInformation;
+            updateCase.anamnesis = caseForUpdate.anamnesis;
+            updateCase.caseStatusId = caseForUpdate.caseStatusId;
+
+            dbContext.caseTable.Update(updateCase);
+            dbContext.SaveChanges();
             return Ok();
         }
     }

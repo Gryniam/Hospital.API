@@ -140,8 +140,8 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
                     caseId = resultCase.id,
                     preparationId = item.id
                 }));
+                dbContext.SaveChanges();
             }
-            dbContext.SaveChanges();
 
             if (!caseModel.anamnesis.IsNullOrEmpty())
             {
@@ -154,7 +154,7 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             }
             if (treatment != caseModel.treatment)
             {
-                resultCase.treatmentInformation += "Було змінено лікування: ";
+                resultCase.treatmentInformation += $"\nБуло змінено лікування({DateTime.Now.ToString()}): ";
                 if(caseModel.treatment != null)
                 {
                     foreach (var item in caseModel.treatment)

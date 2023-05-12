@@ -32,9 +32,10 @@ namespace Hospital.API.Controllers
         private readonly IWork workContext;
         private readonly IDepartament departamentContext;
         private readonly ICast castContext;
+        private readonly ICase caseContext;
 
         public ProfileController(HospitalDbContext dbContext, IUser user, IPatient patient, IHospital hospital, IDoctor doctor,
-            IWork work, IDepartament departament, ICast castContext)
+            IWork work, IDepartament departament, ICast castContext, ICase caseContext)
         {
             this.dbContext = dbContext;
             this.userContext = user;
@@ -44,6 +45,7 @@ namespace Hospital.API.Controllers
             this.workContext = work;
             this.departamentContext = departament;
             this.castContext = castContext;
+            this.caseContext = caseContext;
         }
 
         [HttpGet]
@@ -103,8 +105,6 @@ namespace Hospital.API.Controllers
 
             var listOfCases = dbContext.caseTable.Where(x => x.patientId == patientId).ToList();
 
-            var user = userContext.getUserByPatientId(patientId);
-
             List<CaseModel> cases = new List<CaseModel>();
 
             foreach (var item in listOfCases)
@@ -113,6 +113,21 @@ namespace Hospital.API.Controllers
 
             }
             return Json(cases);
+        }
+        [HttpGet("cases/doctor")]
+        [Authorize]
+        public List<CaseModel> getCasesForDoctor()
+        {
+            List<CaseModel> caseModels = new List<CaseModel>();
+            var doctorId = doctorContext.getDoctorByUserId(Guid.Parse(User.Identity.Name)).id;
+
+            var cases = caseContext.cases.Where(x=>x.doctorId == doctorId).ToList();
+            foreach (var item in cases)
+            {
+                caseModels.Add(castContext.toCaseModel(item));
+            }
+
+            return caseModels;
         }
 
         [HttpGet("appoiments/doctor")]
