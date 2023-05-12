@@ -150,17 +150,17 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             if(!caseModel.treatmentInformation.IsNullOrEmpty())
             {
                 resultCase.treatmentInformation += $"\n {caseModel.treatmentInformation} \n";
-                if (treatment != caseModel.treatment)
+            }
+            if (treatment != caseModel.treatment)
+            {
+                resultCase.treatmentInformation += "Було змінено лікування: ";
+                foreach (var item in caseModel.treatment)
                 {
-                    resultCase.treatmentInformation += "Було змінено лікування: ";
-                    foreach(var item in caseModel.treatment)
-                    {
-                        resultCase.treatmentInformation += $"{item.name}|";
-                    }
+                    resultCase.treatmentInformation += $"{item.name}|";
                 }
             }
 
-            
+
             return resultCase;
         }
 
