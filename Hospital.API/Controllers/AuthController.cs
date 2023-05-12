@@ -116,9 +116,10 @@ namespace Hospital.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-            var searchMail = userContext.getUserByMail(loginModel.mail).mail;
+            var searchUser = userContext.getUserByMail(loginModel.mail);
 
-            if(searchMail == default ||
+
+            if(searchUser == null ||
                !hashPassword.Verify(loginModel.password, 
                userContext.getUserByMail(loginModel.mail).passwordHash)) {
                 return NotFound();

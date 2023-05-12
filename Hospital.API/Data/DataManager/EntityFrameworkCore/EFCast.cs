@@ -2,6 +2,7 @@
 using Hospital.API.Models.Entities;
 using Hospital.API.Models.ViewModels;
 using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +20,10 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         private readonly IUser userContext;
         private readonly IHospital hospitalContext;
         private readonly ISubstance substanceContext;
+        private readonly ITreatment treatmentContext;
 
         public EFCast(HospitalDbContext dbContext, ILocation locationContext, IPatient patientContext, IUser userContext, 
-            IIndexes indexesContext, IHospital hospitalContext, ISubstance substanceContext)
+            IIndexes indexesContext, IHospital hospitalContext, ISubstance substanceContext, ITreatment treatmentContext)
         {
             this.dbContext = dbContext;
             this.locationContext = locationContext;
@@ -30,6 +32,7 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             this.userContext = userContext;
             this.hospitalContext = hospitalContext;
             this.substanceContext = substanceContext;
+            this.treatmentContext = treatmentContext;
         }
 
         public Indexes fromIndexesModel(IndexesModel indexesModel)
@@ -105,9 +108,7 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             caseModel.anamnesis = currentCase.anamnesis;
 
 
-            caseModel.treatment = (from preparation in dbContext.preparationTable.ToList()
-                                   where dbContext.treatmentTable.Any(x => x.caseId == currentCase.id && x.preparationId == preparation.id)
-                                   select preparation).ToList();
+            caseModel.treatment = treatmentContext.GetPreparationsByTreatmantInCase(currentCase.id).ToList();
             //foreach (var preparation in dbContext.preparationTable.ToList())
             //{
             //    if (dbContext.treatmentTable.Any(x => x.caseId == currentCase.id && x.preparationId == preparation.id))
@@ -120,6 +121,47 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
             caseModel.createDate = currentCase.createDate.ToString();
 
             return caseModel;
+        }
+
+
+        public Case fromCaseModel(CaseModel caseModel)
+        {
+            Case resultCase = dbContext.caseTable.Find(caseModel.id);
+
+            List<Preparation> treatment = treatmentContext.GetPreparationsByTreatmantInCase(resultCase.id).ToList();
+
+            if (treatment != caseModel.treatment)
+            {
+                dbContext.treatmentTable.RemoveRange(resultCase.treatment);
+                dbContext.treatmentTable.AddRange(caseModel.treatment.Select(item => new Treatment
+                {
+                    id = Guid.NewGuid(),
+                    caseId = resultCase.id,
+                    preparationId = item.id
+                }));
+            }
+            dbContext.SaveChanges();
+
+            if (!caseModel.anamnesis.IsNullOrEmpty())
+            {
+                resultCase.anamnesis += "\n";
+                resultCase.anamnesis += caseModel.anamnesis;
+            }
+            if(!caseModel.treatmentInformation.IsNullOrEmpty())
+            {
+                resultCase.treatmentInformation += $"\n {caseModel.treatmentInformation} \n";
+                if (treatment != caseModel.treatment)
+                {
+                    resultCase.treatmentInformation += "Було змінено лікування: ";
+                    foreach(var item in caseModel.treatment)
+                    {
+                        resultCase.treatmentInformation += $"{item.name}|";
+                    }
+                }
+            }
+
+            
+            return resultCase;
         }
 
         public DoctorModel toDoctorModel(Doctor currentDoctor)

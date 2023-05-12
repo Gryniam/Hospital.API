@@ -62,14 +62,14 @@ namespace Hospital.API.Controllers
 
         [HttpPost("/Allergens")]
         [Authorize]
-        public List<Substance> getSubstancesOfWithAllergens(Guid patientId)
+        public List<Substance> getSubstancesOfWithAllergens([FromBody]Guid patientId)
         {
             return substanceContext.getAllergySubstance(patientId).ToList();
         }
 
         [HttpPost("/Treatment")]
         [Authorize]
-        public List<Preparation> getTreatment(Guid caseId)
+        public List<Preparation> getTreatment([FromBody]Guid caseId)
         {
            var patientId = caseContext.getCaseById(caseId).patientId;
 
@@ -102,11 +102,21 @@ namespace Hospital.API.Controllers
         }
         [HttpPost("/Indexes")]
         [Authorize]
-        public Indexes getIndexes(Guid caseId)
+        public Indexes getIndexes([FromBody] Guid caseId)
         {
             var patientId = caseContext.getCaseById(caseId).patientId;
 
             return indexesContext.getIndexesByPatientId(patientId);
+        }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> updateCase([FromBody] CaseModel caseModel)
+        {
+            Case caseForUpdate = castContext.fromCaseModel(caseModel);
+
+            dbContext.caseTable.Update(caseForUpdate);
+            return Ok();
         }
     }
 }

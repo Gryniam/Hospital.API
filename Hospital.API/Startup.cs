@@ -78,6 +78,7 @@ namespace Hospital.API
             services.AddScoped<ISpecialty, EFSpecialty>();
             services.AddScoped<ISubstance, EFSubstance>();
             services.AddScoped<ITime,EFTime>();
+            services.AddScoped<ITreatment, EFTreatment>();
             
 
             services.AddHttpContextAccessor();
