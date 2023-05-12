@@ -127,6 +127,7 @@ namespace Hospital.API.Data.DataManager.EntityFrameworkCore
         public Case fromCaseModel(CaseModel caseModel)
         {
             Case resultCase = dbContext.caseTable.Find(caseModel.id);
+            resultCase.treatment = treatmentContext.GetTreatmants.Where(x=>x.caseId == caseModel.id).ToList();
 
             List<Preparation> treatment = treatmentContext.GetPreparationsByTreatmantInCase(resultCase.id).ToList();
 

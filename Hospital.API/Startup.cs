@@ -129,8 +129,8 @@ namespace Hospital.API
 
 
 
-            //SampleData.ClearAllTables(context);
-            //ManualData.fillData(context);
+            SampleData.ClearAllTables(context);
+            ManualData.fillData(context);
         }
     }
 }
